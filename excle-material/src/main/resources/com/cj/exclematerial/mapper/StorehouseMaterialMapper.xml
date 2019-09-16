@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclematerial.mapper.StorehouseMaterialMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.StorehouseMaterial" >
+    <id column="storehouse_material_id" property="storehouseMaterialId" jdbcType="BIGINT" />
+    <result column="storehouse_id" property="storehouseId" jdbcType="BIGINT" />
+    <result column="material_id" property="materialId" jdbcType="BIGINT" />
+    <result column="material_num" property="materialNum" jdbcType="INTEGER" />
+    <result column="year" property="year" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    storehouse_material_id, storehouse_id, material_id, material_num, year
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from storehouse_material
+    where storehouse_material_id = #{storehouseMaterialId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from storehouse_material
+    where storehouse_material_id = #{storehouseMaterialId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.StorehouseMaterial" >
+    insert into storehouse_material (storehouse_material_id, storehouse_id, 
+      material_id, material_num, year
+      )
+    values (#{storehouseMaterialId,jdbcType=BIGINT}, #{storehouseId,jdbcType=BIGINT}, 
+      #{materialId,jdbcType=BIGINT}, #{materialNum,jdbcType=INTEGER}, #{year,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.StorehouseMaterial" >
+    insert into storehouse_material
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="storehouseMaterialId != null" >
+        storehouse_material_id,
+      </if>
+      <if test="storehouseId != null" >
+        storehouse_id,
+      </if>
+      <if test="materialId != null" >
+        material_id,
+      </if>
+      <if test="materialNum != null" >
+        material_num,
+      </if>
+      <if test="year != null" >
+        year,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="storehouseMaterialId != null" >
+        #{storehouseMaterialId,jdbcType=BIGINT},
+      </if>
+      <if test="storehouseId != null" >
+        #{storehouseId,jdbcType=BIGINT},
+      </if>
+      <if test="materialId != null" >
+        #{materialId,jdbcType=BIGINT},
+      </if>
+      <if test="materialNum != null" >
+        #{materialNum,jdbcType=INTEGER},
+      </if>
+      <if test="year != null" >
+        #{year,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.StorehouseMaterial" >
+    update storehouse_material
+    <set >
+      <if test="storehouseId != null" >
+        storehouse_id = #{storehouseId,jdbcType=BIGINT},
+      </if>
+      <if test="materialId != null" >
+        material_id = #{materialId,jdbcType=BIGINT},
+      </if>
+      <if test="materialNum != null" >
+        material_num = #{materialNum,jdbcType=INTEGER},
+      </if>
+      <if test="year != null" >
+        year = #{year,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where storehouse_material_id = #{storehouseMaterialId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.StorehouseMaterial" >
+    update storehouse_material
+    set storehouse_id = #{storehouseId,jdbcType=BIGINT},
+      material_id = #{materialId,jdbcType=BIGINT},
+      material_num = #{materialNum,jdbcType=INTEGER},
+      year = #{year,jdbcType=TIMESTAMP}
+    where storehouse_material_id = #{storehouseMaterialId,jdbcType=BIGINT}
+  </update>
+  <!--查询此场站、此物资、此年是否已存在-->
+  <select id="findByid" resultMap="BaseResultMap">
+    SELECT
+    *
+    FROM
+    storehouse_material
+    WHERE
+    storehouse_id = #{storehouseId}
+    AND
+    material_id = #{materialId}
+  </select>
+</mapper>

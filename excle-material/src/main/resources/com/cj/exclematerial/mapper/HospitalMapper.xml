@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclematerial.mapper.HospitalMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.Hospital" >
+    <id column="hospital_id" property="hospitalId" jdbcType="BIGINT" />
+    <result column="hospital_name" property="hospitalName" jdbcType="VARCHAR" />
+    <result column="hospital_address" property="hospitalAddress" jdbcType="VARCHAR" />
+    <result column="hospital_level" property="hospitalLevel" jdbcType="CHAR" />
+    <result column="oxygen_chamber" property="oxygenChamber" jdbcType="CHAR" />
+    <result column="factory_id" property="factoryId" jdbcType="BIGINT" />
+    <result column="task_area_id" property="taskAreaId" jdbcType="BIGINT" />
+    <result column="station_id" property="stationId" jdbcType="BIGINT" />
+    <result column="table_year" property="tableYear" jdbcType="TIMESTAMP" />
+    <result column="table_name" property="tableName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="ExcelResultMap" type="com.cj.exclematerial.pojo.HospitalBo" >
+    <id column="hospital_id" property="hospitalId" jdbcType="BIGINT" />
+    <result column="hospital_name" property="hospitalName" jdbcType="VARCHAR" />
+    <result column="hospital_address" property="hospitalAddress" jdbcType="VARCHAR" />
+    <result column="hospital_level" property="hospitalLevel" jdbcType="CHAR" />
+    <result column="oxygen_chamber" property="oxygenChamber" jdbcType="CHAR" />
+  </resultMap>
+
+
+  <sql id="Base_Column_List" >
+    hospital_id, hospital_name, hospital_address, hospital_level, oxygen_chamber, factory_id,
+    task_area_id, station_id, table_year, table_name
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from hospital
+    where hospital_id = #{hospitalId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from hospital
+    where hospital_id = #{hospitalId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.Hospital" >
+    insert into hospital (hospital_id, hospital_name, hospital_address,
+    hospital_level, oxygen_chamber, factory_id,
+    task_area_id, station_id, table_year,
+    table_name)
+    values (#{hospitalId,jdbcType=BIGINT}, #{hospitalName,jdbcType=VARCHAR}, #{hospitalAddress,jdbcType=VARCHAR},
+    #{hospitalLevel,jdbcType=CHAR}, #{oxygenChamber,jdbcType=CHAR}, #{factoryId,jdbcType=BIGINT},
+    #{taskAreaId,jdbcType=BIGINT}, #{stationId,jdbcType=BIGINT}, #{tableYear,jdbcType=TIMESTAMP},
+    #{tableName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.Hospital" >
+    insert into hospital
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="hospitalId != null" >
+        hospital_id,
+      </if>
+      <if test="hospitalName != null" >
+        hospital_name,
+      </if>
+      <if test="hospitalAddress != null" >
+        hospital_address,
+      </if>
+      <if test="hospitalLevel != null" >
+        hospital_level,
+      </if>
+      <if test="oxygenChamber != null" >
+        oxygen_chamber,
+      </if>
+      <if test="factoryId != null" >
+        factory_id,
+      </if>
+      <if test="taskAreaId != null" >
+        task_area_id,
+      </if>
+      <if test="stationId != null" >
+        station_id,
+      </if>
+      <if test="tableYear != null" >
+        table_year,
+      </if>
+      <if test="tableName != null" >
+        table_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="hospitalId != null" >
+        #{hospitalId,jdbcType=BIGINT},
+      </if>
+      <if test="hospitalName != null" >
+        #{hospitalName,jdbcType=VARCHAR},
+      </if>
+      <if test="hospitalAddress != null" >
+        #{hospitalAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="hospitalLevel != null" >
+        #{hospitalLevel,jdbcType=CHAR},
+      </if>
+      <if test="oxygenChamber != null" >
+        #{oxygenChamber,jdbcType=CHAR},
+      </if>
+      <if test="factoryId != null" >
+        #{factoryId,jdbcType=BIGINT},
+      </if>
+      <if test="taskAreaId != null" >
+        #{taskAreaId,jdbcType=BIGINT},
+      </if>
+      <if test="stationId != null" >
+        #{stationId,jdbcType=BIGINT},
+      </if>
+      <if test="tableYear != null" >
+        #{tableYear,jdbcType=TIMESTAMP},
+      </if>
+      <if test="tableName != null" >
+        #{tableName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.Hospital" >
+    update hospital
+    <set >
+      <if test="hospitalName != null" >
+        hospital_name = #{hospitalName,jdbcType=VARCHAR},
+      </if>
+      <if test="hospitalAddress != null" >
+        hospital_address = #{hospitalAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="hospitalLevel != null" >
+        hospital_level = #{hospitalLevel,jdbcType=CHAR},
+      </if>
+      <if test="oxygenChamber != null" >
+        oxygen_chamber = #{oxygenChamber,jdbcType=CHAR},
+      </if>
+      <if test="factoryId != null" >
+        factory_id = #{factoryId,jdbcType=BIGINT},
+      </if>
+      <if test="taskAreaId != null" >
+        task_area_id = #{taskAreaId,jdbcType=BIGINT},
+      </if>
+      <if test="stationId != null" >
+        station_id = #{stationId,jdbcType=BIGINT},
+      </if>
+      <if test="tableYear != null" >
+        table_year = #{tableYear,jdbcType=TIMESTAMP},
+      </if>
+      <if test="tableName != null" >
+        table_name = #{tableName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where hospital_id = #{hospitalId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.Hospital" >
+    update hospital
+    set hospital_name = #{hospitalName,jdbcType=VARCHAR},
+    hospital_address = #{hospitalAddress,jdbcType=VARCHAR},
+    hospital_level = #{hospitalLevel,jdbcType=CHAR},
+    oxygen_chamber = #{oxygenChamber,jdbcType=CHAR},
+    factory_id = #{factoryId,jdbcType=BIGINT},
+    task_area_id = #{taskAreaId,jdbcType=BIGINT},
+    station_id = #{stationId,jdbcType=BIGINT},
+    table_year = #{tableYear,jdbcType=TIMESTAMP},
+    table_name = #{tableName,jdbcType=VARCHAR}
+    where hospital_id = #{hospitalId,jdbcType=BIGINT}
+  </update>
+
+  <!--根据Query查询医疗机构分布信息-->
+  <select id="findByQuery" resultType="java.util.Map" parameterType="java.util.Map" >
+    select
+    hospital_id hospitalId,
+    hospital_name hospitalName,
+    hospital_address hospitalAddress,
+    hospital_level hospitalLevel,
+    oxygen_chamber oxygenChamber,
+    factory_basic_msg.factory_id factoryId,
+    factory_basic_msg.factory_name factoryName
+    from hospital
+    Left JOIN
+    factory_basic_msg ON factory_basic_msg.factory_id=hospital.factory_id
+    WHERE 1=1
+    <if test="datetime!=null">
+      AND YEAR (table_year)=#{datetime}
+    </if>
+    <if test="factoryId!=null">
+      AND factory_basic_msg.factory_id=#{factoryId}
+    </if>
+    <if test="taskAreaId!=null">
+      AND taskarea_id=#{taskAreaId}
+    </if>
+    <if test="stationId!=null">
+      AND station_id=#{stationId}
+    </if>
+
+  </select>
+
+
+  <!--根据Query查询医疗机构分布Excel信息-->
+  <select id="selectExcelHospital" resultMap="ExcelResultMap" parameterType="java.util.Map" >
+    select
+    <include refid="Base_Column_List" />
+    from hospital WHERE 1=1
+    <if test="datetime!=null">
+      AND YEAR (table_year)=#{datetime}
+    </if>
+    <if test="factoryId!=null">
+      AND factory_id=#{factoryId}
+    </if>
+    <if test="taskAreaId!=null">
+      AND taskarea_id=#{taskAreaId}
+    </if>
+    <if test="stationId!=null">
+      AND station_id=#{stationId}
+    </if>
+
+  </select>
+</mapper>

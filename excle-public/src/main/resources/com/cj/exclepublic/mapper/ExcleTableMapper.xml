@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclepublic.mapper.ExcleTableMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.ExcleTable" >
+    <id column="excle_table_id" property="excleTableId" jdbcType="BIGINT" />
+    <result column="excle_table_name" property="excleTableName" jdbcType="VARCHAR" />
+    <result column="excle_sort" property="excleSort" jdbcType="INTEGER" />
+    <result column="factory_type_num" property="factoryTypeNum" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    excle_table_id, excle_table_name, excle_sort
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from excle_table
+    where excle_table_id = #{excleTableId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from excle_table
+    where excle_table_id = #{excleTableId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.ExcleTable" >
+    insert into excle_table (excle_table_id, excle_table_name, excle_sort
+    )
+    values (#{excleTableId,jdbcType=BIGINT}, #{excleTableName,jdbcType=VARCHAR}, #{excleSort,jdbcType=INTEGER}
+    )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.ExcleTable" >
+    <selectKey order="AFTER" keyProperty="excleTableId" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into excle_table
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="excleTableId != null" >
+        excle_table_id,
+      </if>
+      <if test="excleTableName != null" >
+        excle_table_name,
+      </if>
+      <if test="excleSort != null" >
+        excle_sort,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="excleTableId != null" >
+        #{excleTableId,jdbcType=BIGINT},
+      </if>
+      <if test="excleTableName != null" >
+        #{excleTableName,jdbcType=VARCHAR},
+      </if>
+      <if test="excleSort != null" >
+        #{excleSort,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.ExcleTable" >
+    update excle_table
+    <set >
+      <if test="excleTableName != null" >
+        excle_table_name = #{excleTableName,jdbcType=VARCHAR},
+      </if>
+      <if test="excleSort != null" >
+        excle_sort = #{excleSort,jdbcType=INTEGER},
+      </if>
+    </set>
+    where excle_table_id = #{excleTableId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.ExcleTable" >
+    update excle_table
+    set excle_table_name = #{excleTableName,jdbcType=VARCHAR},
+    excle_sort = #{excleSort,jdbcType=INTEGER}
+    where excle_table_id = #{excleTableId,jdbcType=BIGINT}
+  </update>
+
+  <!--根据场站ID和表格名称查询excle表格列表信息-->
+  <select id="selectByStationIdAndTableName" resultMap="BaseResultMap">
+    SELECT
+    et.*,aef.`factory_type_id`
+    FROM
+    excle_table et
+    LEFT JOIN auth_excle_factory aef ON aef.`excle_table_id` = et.`excle_table_id`
+    LEFT JOIN station s ON aef.`factory_type_id` = s.`factory_type_id`
+    WHERE
+    s.station_id = #{stationId}
+    AND
+    et.excle_table_name = #{tableName}
+  </select>
+
+  <!--根据工艺ID集合和表名查询信息（只会有一条结果集）-->
+  <select id="findExcleTable" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT
+    et.*
+    FROM
+    excle_table et
+    LEFT JOIN auth_excle_factory aef ON aef.excle_table_id = et.excle_table_id
+    WHERE
+    et.excle_table_name = #{excleTableName}
+    AND
+    aef.factory_type_id IN
+    <foreach collection="factoryTypeIds" item="item" index="index" separator="," open="(" close=")">
+      #{item}
+    </foreach>
+    GROUP BY et.excle_table_id
+  </select>
+
+  <!--根据场站ID查询 模块填表顺序及表格对应工艺数量-->
+  <select id="findExcleSortAndFactoryTypeNum" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    SELECT
+    a.*,COUNT(aef2.`factory_type_id`) AS factory_type_num
+    FROM
+    (
+    SELECT
+    et.*
+    FROM
+    excle_table et
+    LEFT JOIN auth_excle_factory aef ON aef.excle_table_id = et.excle_table_id
+    LEFT JOIN station s ON s.`factory_type_id` = aef.`factory_type_id`
+    WHERE
+    s.`station_id` = #{stationId}
+    ) a
+    LEFT JOIN auth_excle_factory aef2 ON a.excle_table_id = aef2.`excle_table_id`
+    GROUP BY a.excle_table_id
+
+  </select>
+
+
+</mapper>

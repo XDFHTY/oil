@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cj.exclegrade.mapper.EnvironmentGradeMapper">
+
+<resultMap id="BaseResultMap" type="com.cj.common.entity.EnvironmentGrade">
+  <id column="environmental_grade_id" jdbcType="BIGINT" property="environmentalGradeId" />
+  <result column="target" jdbcType="BIGINT" property="target" />
+  <result column="result" jdbcType="VARCHAR" property="result" />
+  <result column="result_describe" jdbcType="VARCHAR" property="resultDescribe" />
+  <result column="station_id" jdbcType="INTEGER" property="stationId" />
+</resultMap>
+
+<resultMap id="BaseViewResultMap" type="com.cj.exclegrade.pojo.EnvironmentGradeView">
+
+  <id column="environmental_grade_id" jdbcType="BIGINT" property="environmentalGradeId" />
+  <result column="targent" jdbcType="VARCHAR" property="target" />
+  <result column="result" jdbcType="VARCHAR" property="result" />
+  <result column="result_describe" jdbcType="VARCHAR" property="resultDescribe" />
+  <result column="station_name" jdbcType="VARCHAR" property="stationName" />
+</resultMap>
+
+<resultMap id="FactoryEnvironmentViewMap" type="map">
+  <result column="factory_name" property="factoryName"></result>
+  <result column="factory_id" property="factoryId"></result>
+  <result column="task_area_name" property="taskAreaName"></result>
+  <result column="task_area_id" property="taskAreaId"></result>
+  <result column="factory_type_name" property="factoryTypeName"></result>
+  <result column="station_name" property="stationName"></result>
+  <result column="station_id" property="stationId"></result>
+  <result column="result" property="result"></result>
+  <result column="shape" property="shape"></result>
+  <result column="datetime" property="datetime"></result>
+  <result column="label" property="label"></result>
+
+</resultMap>
+
+<sql id="Base_Column_List">
+  environmental_grade_id, target, result, result_describe, station_id
+</sql>
+<select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  select
+  <include refid="Base_Column_List" />
+  from environment_grade
+  where environmental_grade_id = #{environmentalGradeId,jdbcType=BIGINT}
+</select>
+<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+  delete from environment_grade
+  where environmental_grade_id = #{environmentalGradeId,jdbcType=BIGINT}
+</delete>
+<insert id="insert" parameterType="com.cj.common.entity.EnvironmentGrade">
+  insert into environment_grade (environmental_grade_id, target, result,
+  result_describe, station_id, gradetime,
+  gradename)
+  values (#{environmentalGradeId,jdbcType=BIGINT}, #{target,jdbcType=BIGINT}, #{result,jdbcType=VARCHAR},
+  #{resultDescribe,jdbcType=VARCHAR}, #{stationId,jdbcType=INTEGER}, #{gradetime,jdbcType=TIMESTAMP},
+  #{gradename,jdbcType=VARCHAR})
+</insert>
+<insert id="insertSelective" parameterType="com.cj.common.entity.EnvironmentGrade">
+  insert into environment_grade
+  <trim prefix="(" suffix=")" suffixOverrides=",">
+    <if test="environmentalGradeId != null">
+      environmental_grade_id,
+    </if>
+    <if test="target != null">
+      target,
+    </if>
+    <if test="result != null">
+      result,
+    </if>
+    <if test="resultDescribe != null">
+      result_describe,
+    </if>
+    <if test="stationId != null">
+      station_id,
+    </if>
+    <if test="gradetime != null">
+      gradetime,
+    </if>
+    <if test="gradename != null">
+      gradename,
+    </if>
+  </trim>
+  <trim prefix="values (" suffix=")" suffixOverrides=",">
+    <if test="environmentalGradeId != null">
+      #{environmentalGradeId,jdbcType=BIGINT},
+    </if>
+    <if test="target != null">
+      #{target,jdbcType=BIGINT},
+    </if>
+    <if test="result != null">
+      #{result,jdbcType=VARCHAR},
+    </if>
+    <if test="resultDescribe != null">
+      #{resultDescribe,jdbcType=VARCHAR},
+    </if>
+    <if test="stationId != null">
+      #{stationId,jdbcType=INTEGER},
+    </if>
+    <if test="gradetime != null">
+      #{gradetime,jdbcType=TIMESTAMP},
+    </if>
+    <if test="gradename != null">
+      #{gradename,jdbcType=VARCHAR},
+    </if>
+  </trim>
+</insert>
+<update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.EnvironmentGrade">
+  update environment_grade
+  <set>
+    <if test="target != null">
+      target = #{target,jdbcType=BIGINT},
+    </if>
+    <if test="result != null">
+      result = #{result,jdbcType=VARCHAR},
+    </if>
+    <if test="resultDescribe != null">
+      result_describe = #{resultDescribe,jdbcType=VARCHAR},
+    </if>
+    <if test="stationId != null">
+      station_id = #{stationId,jdbcType=INTEGER},
+    </if>
+    <if test="gradetime != null">
+      gradetime = #{gradetime,jdbcType=TIMESTAMP},
+    </if>
+    <if test="gradename != null">
+      gradename = #{gradename,jdbcType=VARCHAR},
+    </if>
+  </set>
+  where environmental_grade_id = #{environmentalGradeId,jdbcType=BIGINT}
+</update>
+<update id="updateByPrimaryKey" parameterType="com.cj.common.entity.EnvironmentGrade">
+  update environment_grade
+  set target = #{target,jdbcType=BIGINT},
+  result = #{result,jdbcType=VARCHAR},
+  result_describe = #{resultDescribe,jdbcType=VARCHAR},
+  station_id = #{stationId,jdbcType=INTEGER},
+  gradetime = #{gradetime,jdbcType=TIMESTAMP},
+  gradename = #{gradename,jdbcType=VARCHAR}
+  where environmental_grade_id = #{environmentalGradeId,jdbcType=BIGINT}
+</update>
+
+<!--根据条件查询场站评估结果-->
+<select id="findByQuery" resultMap="BaseViewResultMap" parameterType="com.cj.exclegrade.vo.VoEnvironmentStation">
+  SELECT
+  environmental_grade_id,targent,result,result_describe,station_name
+  FROM station LEFT JOIN environment_grade ON station.station_id=environment_grade.station_id
+  LEFT JOIN environment_target ON
+   environment_target.environment_target_id=environment_grade.target
+   WHERE station.station_id=#{stationId}
+   AND YEAR(environment_grade.gradetime)=#{datetime} AND targent in ('Q水','E水','M水','Q气','E气','M气','P','C','违法记录')
+</select>
+
+  <!--根据条件查询厂、矿评估结果-->
+  <select id="findFactoryEnvironmentByQuery" resultMap="com.cj.exclegrade.mapper.EnvironmentGradeMapper.FactoryEnvironmentViewMap,com.cj.common.mapper.PublicMapper.PagerTotal" parameterType="com.cj.exclegrade.vo.VoEnvironment">
+    SELECT
+     SQL_CALC_FOUND_ROWS
+    factory_basic_msg.factory_name,
+    factory_basic_msg.factory_id,
+    task_area.task_area_name,
+    task_area.task_area_id,
+    factory_type.factory_type_name,
+    CASE WHEN factory_type.factory_type = '场站'THEN 1 ELSE  2 END AS shape,
+    CASE WHEN factory_type.factory_type = '场站'THEN '点型' ELSE '线型' END AS label,
+    station.station_name,
+    station.station_id,
+    DATE_FORMAT(temp.gradetime,'%Y') datetime,
+    CASE WHEN result is NOT NULL THEN '已评估' ELSE '未评估' END AS reeult
+    FROM
+    factory_basic_msg
+    LEFT JOIN task_area ON factory_basic_msg.factory_id=task_area.factory_id
+    <if test="taskAreaId!=null">
+      AND task_area.task_area_id=#{taskAreaId}
+    </if>
+    LEFT JOIN station ON station.task_area_id=task_area.task_area_id
+    LEFT JOIN factory_type ON station.factory_type_id=factory_type.factory_type_id
+    LEFT JOIN
+    (SELECT station_id,result,environment_grade.gradetime FROM environment_grade WHERE environment_grade.target = 1
+    AND YEAR(environment_grade.gradetime)=#{datetime} ) temp ON temp.station_id=station.station_id
+    WHERE factory_basic_msg.factory_id=#{factoryId}
+    LIMIT #{currentIndex,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER};
+    SELECT FOUND_ROWS() AS total;
+  </select>
+  <!--根据条件查询厂、矿评估结果-->
+  <select id="findByDate" parameterType="com.cj.common.entity.EnvironmentGrade"
+          resultMap="BaseResultMap">
+    SELECT environmental_grade_id,target,result,result_describe,station_id,gradetime,gradename
+    FROM environment_grade
+    WHERE station_id=#{stationId} AND year(gradetime)=#{gradetime} AND target=#{target}
+  </select>
+
+  <!--根据场站ID和年份查询场站的评估结果-->
+  <select id="getResultByStationId" parameterType="com.cj.exclegrade.vo.VoEnvironmentStation" resultType="com.cj.exclegrade.vo.StationResultVo">
+    SELECT
+        MAX(
+            CASE
+            WHEN environment_target.targent = 'M水' THEN
+                environment_grade.result
+            END
+        ) AS MW,
+        MAX(
+            CASE
+            WHEN environment_target.targent = 'Q水' THEN
+                environment_grade.result
+            END
+        ) AS QW,
+        MAX(
+            CASE
+            WHEN environment_target.targent = 'E水' THEN
+                environment_grade.result
+            END
+        ) AS EW,
+        MAX(
+            CASE
+            WHEN environment_target.targent = 'Q气' THEN
+                environment_grade.result
+            END
+        ) AS QG,
+        MAX(
+            CASE
+            WHEN environment_target.targent = 'E气' THEN
+                environment_grade.result
+            END
+        ) AS EG,
+        MAX(
+            CASE
+            WHEN environment_target.targent = 'M气' THEN
+                environment_grade.result
+            END
+        ) AS MG,
+        MAX(
+            CASE
+            WHEN environment_target.targent = 'P' THEN
+                environment_grade.result
+            END
+        ) AS P,
+        MAX(
+            CASE
+            WHEN environment_target.targent = 'C' THEN
+                environment_grade.result
+            END
+        ) AS C,
+        MAX(
+            CASE
+            WHEN environment_target.targent = '违法记录' THEN
+                environment_grade.result
+            END
+        ) AS danger,
+        factory_type.factory_type_name stationType
+    FROM
+        environment_grade
+    JOIN station ON environment_grade.station_id = station.station_id
+    JOIN factory_type ON factory_type.factory_type_id = station.factory_type_id
+    JOIN environment_target ON environment_grade.target = environment_target.environment_target_id
+    WHERE station.station_id=#{stationId} AND YEAR(environment_grade.gradetime)=#{datetime}
+    GROUP BY
+        environment_grade.station_id
+  </select>
+    <!--获取targetId-->
+    <select id="getTargetIdByTarget" resultType="java.lang.Long">
+        SELECT environment_target_id targentId FROM environment_target WHERE targent=#{target}
+    </select>
+</mapper>

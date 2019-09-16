@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.organization.mapper.FactoryBasicMsgMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.FactoryBasicMsg" >
+    <id column="factory_id" property="factoryId" jdbcType="BIGINT" />
+    <result column="branch_company_id" property="branchCompanyId" jdbcType="BIGINT" />
+    <result column="factory_name" property="factoryName" jdbcType="VARCHAR" />
+    <result column="popedom_grade" property="popedomGrade" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    factory_id, branch_company_id, factory_name, popedom_grade
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from factory_basic_msg
+    where factory_id = #{factoryId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from factory_basic_msg
+    where factory_id = #{factoryId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.FactoryBasicMsg" >
+    insert into factory_basic_msg (factory_id, branch_company_id, factory_name, 
+      popedom_grade)
+    values (#{factoryId,jdbcType=BIGINT}, #{branchCompanyId,jdbcType=BIGINT}, #{factoryName,jdbcType=VARCHAR}, 
+      #{popedomGrade,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.FactoryBasicMsg" >
+    insert into factory_basic_msg
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="factoryId != null" >
+        factory_id,
+      </if>
+      <if test="branchCompanyId != null" >
+        branch_company_id,
+      </if>
+      <if test="factoryName != null" >
+        factory_name,
+      </if>
+      <if test="popedomGrade != null" >
+        popedom_grade,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="factoryId != null" >
+        #{factoryId,jdbcType=BIGINT},
+      </if>
+      <if test="branchCompanyId != null" >
+        #{branchCompanyId,jdbcType=BIGINT},
+      </if>
+      <if test="factoryName != null" >
+        #{factoryName,jdbcType=VARCHAR},
+      </if>
+      <if test="popedomGrade != null" >
+        #{popedomGrade,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.FactoryBasicMsg" >
+    update factory_basic_msg
+    <set >
+      <if test="branchCompanyId != null" >
+        branch_company_id = #{branchCompanyId,jdbcType=BIGINT},
+      </if>
+      <if test="factoryName != null" >
+        factory_name = #{factoryName,jdbcType=VARCHAR},
+      </if>
+      <if test="popedomGrade != null" >
+        popedom_grade = #{popedomGrade,jdbcType=CHAR},
+      </if>
+    </set>
+    where factory_id = #{factoryId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.FactoryBasicMsg" >
+    update factory_basic_msg
+    set branch_company_id = #{branchCompanyId,jdbcType=BIGINT},
+      factory_name = #{factoryName,jdbcType=VARCHAR},
+      popedom_grade = #{popedomGrade,jdbcType=CHAR}
+    where factory_id = #{factoryId,jdbcType=BIGINT}
+  </update>
+
+
+  <!--映射-->
+  <resultMap id="findFactoryByIdMap" type="com.cj.organization.entity.RespOrganization">
+    <result column="factory_id" property="factoryId"/>
+    <result column="factory_name" property="factoryName"/>
+    <result column="admin_id" property="adminId"/>
+    <result column="admin_name" property="adminName"/>
+    <result column="full_name" property="fullName"/>
+  </resultMap>
+  <!--根据气矿id查询气矿基本信息和管理人信息-->
+  <select id="findFactoryById" parameterType="com.cj.core.domain.Pager" resultMap="findFactoryByIdMap">
+    select fbm.`factory_id`,fbm.`factory_name`,a.`admin_name`,ai.full_name,a.`admin_id`
+    from factory_basic_msg fbm
+      left join auth_admin_popedom aap
+        on fbm.`factory_id` = aap.`popedom_id`
+           and aap.`popedom_grade` = 2
+      left join admin a
+        on aap.`admin_id` = a.`admin_id`
+      left join admin_info ai
+        on a.`admin_id` = ai.`admin_id`
+    where fbm.`branch_company_id` = #{parameters.branchCompanyId}
+    <if test="parameters.containsKey('factoryId')">
+      and fbm.`factory_id` = #{parameters.factoryId}
+    </if>
+    limit #{minRow},#{maxRow};
+  </select>
+
+  <!--统计条数-->
+  <select id="findFactoryByIdCount" parameterType="com.cj.core.domain.Pager" resultType="java.lang.Integer">
+    select count(*)
+    from factory_basic_msg fbm
+    left join auth_admin_popedom aap
+    on fbm.`factory_id` = aap.`popedom_id`
+    and aap.`popedom_grade` = 2
+    left join admin a
+    on aap.`admin_id` = a.`admin_id`
+    left join admin_info ai
+    on a.`admin_id` = ai.`admin_id`
+    where fbm.`branch_company_id` = #{parameters.branchCompanyId}
+    <if test="parameters.containsKey('factoryId')">
+      and fbm.`factory_id` = #{parameters.factoryId}
+    </if>
+  </select>
+
+
+  <!--根据气矿名称查重-->
+  <select id="findFactoryByName" resultMap="BaseResultMap">
+    SELECT *
+    FROM factory_basic_msg
+    WHERE factory_name = #{name}
+          AND branch_company_id = #{id}
+    LIMIT 1
+  </select>
+
+  <!--添加气矿信息 主键返回-->
+  <insert id="addFactory" parameterType="com.cj.common.entity.FactoryBasicMsg" useGeneratedKeys="true" keyProperty="factoryId">
+    INSERT INTO factory_basic_msg (branch_company_id,factory_name) VALUES (#{branchCompanyId},#{factoryName})
+  </insert>
+
+
+  <resultMap id="findAllNameMap" type="com.cj.organization.entity.ExprotOrganInfo">
+    <result column="factory_name" property="factoryName"/>
+    <result column="task_area_name" property="taskAreaName"/>
+    <result column="station_name" property="stationName"/>
+  </resultMap>
+  <!--根据分公司id查询 全部组织机构名称-->
+  <select id="findAllName" parameterType="java.lang.Long" resultMap="findAllNameMap">
+    select fbm.`factory_name`,ta.`task_area_name`,s.`station_name`
+    FROM station s
+      LEFT JOIN task_area ta  ON s.`task_area_id` = ta.`task_area_id`
+      LEFT JOIN factory_basic_msg fbm ON ta.`factory_id` = fbm.`factory_id`
+    where fbm.`branch_company_id` = #{branchCompanyId}
+  </select>
+
+
+  <resultMap id="findFactoryNameMap" type="com.cj.organization.entity.ExprotOrganInfo">
+    <result column="factory_name" property="factoryName"/>
+  </resultMap>
+  <!--根据分公司id查询 查询 气矿名称-->
+  <select id="findFactoryName" parameterType="java.lang.Long" resultMap="findFactoryNameMap">
+    SELECT factory_name
+    FROM factory_basic_msg
+    WHERE branch_company_id = #{branchCompanyId}
+  </select>
+
+
+  <!--给管理员添加姓名-->
+  <insert id="addFullName">
+    INSERT INTO admin_info (admin_id,full_name,phone) VALUES (#{adminId},#{fullName},#{phone})
+  </insert>
+
+
+  <!--根据工艺分类名称 查询id-->
+  <select id="findFactoryTypeByName" parameterType="java.lang.String" resultType="java.lang.Long">
+    SELECT factory_type_id
+    FROM factory_type
+    WHERE factory_type_name = #{factoryTypeName}
+  </select>
+
+  <!--映射-->
+  <resultMap id="findAdminInfoByIdMap" type="com.cj.common.entity.AdminInfo">
+    <result column="admin_info_id" property="adminInfoId"/>
+    <result column="admin_id" property="adminId"/>
+    <result column="full_name" property="fullName"/>
+  </resultMap>
+  <!--AdminInfo 根据管理员id查询是否添加了姓名-->
+  <select id="findAdminInfoById" parameterType="java.lang.Long" resultMap="findAdminInfoByIdMap">
+    SELECT *
+    FROM admin_info
+    WHERE admin_id = #{adminId}
+    LIMIT 1
+  </select>
+
+
+  <!--AdminInfo  根据管理员id 修改姓名-->
+  <update id="updateNameById">
+    UPDATE admin_info SET full_name = #{fullName},phone = #{phone}
+    WHERE admin_id = #{adminId}
+  </update>
+
+  <!--修改气矿名称-->
+    <update id="updateFactoryNameById">
+      UPDATE factory_basic_msg
+      SET factory_name = #{name}
+      WHERE factory_id = #{factoryId}
+    </update>
+
+
+    <!--映射-->
+  <resultMap id="findAdminByNameMap" type="com.cj.organization.entity.AdminAndRole">
+    <id column="admin_id" property="adminId" jdbcType="BIGINT" />
+    <result column="admin_name" property="adminName" jdbcType="VARCHAR" />
+    <result column="admin_pass" property="adminPass" jdbcType="VARCHAR" />
+    <result column="salt_val" property="saltVal" jdbcType="VARCHAR" />
+    <result column="admin_type" property="adminType" jdbcType="CHAR" />
+    <result column="admin_state" property="adminState" jdbcType="CHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="operator_id" property="operatorId" jdbcType="BIGINT" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="role_description_name" property="roleDescriptionName"/>
+  </resultMap>
+  <!--根据adminName查询admin和角色等级-->
+  <select id="findAdminByName" resultMap="findAdminByNameMap" parameterType="java.lang.String">
+    SELECT
+      a.*,ar.`role_description_name`
+    FROM
+      admin a left join auth_customer_role acr on a.`admin_id` = acr.`customer_id`
+      left join auth_role ar on acr.`role_id` = ar.`role_id`
+    WHERE
+    a.admin_name = #{name}
+  </select>
+</mapper>

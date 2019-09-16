@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.organization.mapper.TaskAreaMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.TaskArea" >
+    <id column="task_area_id" property="taskAreaId" jdbcType="BIGINT" />
+    <result column="factory_id" property="factoryId" jdbcType="BIGINT" />
+    <result column="task_area_name" property="taskAreaName" jdbcType="VARCHAR" />
+    <result column="popedom_grade" property="popedomGrade" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    task_area_id, factory_id, task_area_name, popedom_grade
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from task_area
+    where task_area_id = #{taskAreaId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from task_area
+    where task_area_id = #{taskAreaId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.TaskArea" >
+    insert into task_area (task_area_id, factory_id, task_area_name, 
+      popedom_grade)
+    values (#{taskAreaId,jdbcType=BIGINT}, #{factoryId,jdbcType=BIGINT}, #{taskAreaName,jdbcType=VARCHAR}, 
+      #{popedomGrade,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.TaskArea" >
+    insert into task_area
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="taskAreaId != null" >
+        task_area_id,
+      </if>
+      <if test="factoryId != null" >
+        factory_id,
+      </if>
+      <if test="taskAreaName != null" >
+        task_area_name,
+      </if>
+      <if test="popedomGrade != null" >
+        popedom_grade,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="taskAreaId != null" >
+        #{taskAreaId,jdbcType=BIGINT},
+      </if>
+      <if test="factoryId != null" >
+        #{factoryId,jdbcType=BIGINT},
+      </if>
+      <if test="taskAreaName != null" >
+        #{taskAreaName,jdbcType=VARCHAR},
+      </if>
+      <if test="popedomGrade != null" >
+        #{popedomGrade,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.TaskArea" >
+    update task_area
+    <set >
+      <if test="factoryId != null" >
+        factory_id = #{factoryId,jdbcType=BIGINT},
+      </if>
+      <if test="taskAreaName != null" >
+        task_area_name = #{taskAreaName,jdbcType=VARCHAR},
+      </if>
+      <if test="popedomGrade != null" >
+        popedom_grade = #{popedomGrade,jdbcType=CHAR},
+      </if>
+    </set>
+    where task_area_id = #{taskAreaId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.TaskArea" >
+    update task_area
+    set factory_id = #{factoryId,jdbcType=BIGINT},
+      task_area_name = #{taskAreaName,jdbcType=VARCHAR},
+      popedom_grade = #{popedomGrade,jdbcType=CHAR}
+    where task_area_id = #{taskAreaId,jdbcType=BIGINT}
+  </update>
+
+  <!--修改作业区名称-->
+    <update id="updateAreaNameById">
+      UPDATE task_area
+      SET task_area_name = #{name}
+      WHERE task_area_id = #{areaId}
+    </update>
+
+
+    <resultMap id="findAreaByIdMap" type="com.cj.organization.entity.RespOrganization">
+    <result column="factory_id" property="factoryId"/>
+    <result column="factory_name" property="factoryName"/>
+    <result column="task_area_id" property="taskAreaId"/>
+    <result column="task_area_name" property="taskAreaName"/>
+    <result column="admin_id" property="adminId"/>
+    <result column="admin_name" property="adminName"/>
+    <result column="full_name" property="fullName"/>
+  </resultMap>
+  <!--根据气矿Id、作业区id 查询 气矿基本信息、作业区和管理人信息-->
+  <select id="findAreaById" parameterType="com.cj.core.domain.Pager" resultMap="findAreaByIdMap">
+    SELECT fbm.`factory_id`,fbm.`factory_name`,ta.`task_area_id`,ta.`task_area_name`,a.`admin_name`,ai.`full_name`,a.admin_id
+    FROM task_area ta
+      LEFT JOIN factory_basic_msg fbm
+        ON ta.`factory_id` = fbm.`factory_id`
+      LEFT JOIN auth_admin_popedom aap
+        ON ta.`task_area_id` = aap.`popedom_id`
+           AND aap.popedom_grade = 3
+      LEFT JOIN admin a
+        ON aap.`admin_id` = a.`admin_id`
+      LEFT JOIN admin_info ai
+        ON aap.`admin_id` = ai.`admin_id`
+
+    WHERE fbm.`branch_company_id`= #{parameters.branchCompanyId}
+
+    <if test="parameters.containsKey('factoryId')">
+      and fbm.`factory_id` = #{parameters.factoryId}
+    </if>
+    <if test="parameters.containsKey('areaId')">
+      and ta.`task_area_id` = #{parameters.areaId}
+    </if>
+
+    limit #{minRow},#{maxRow};
+  </select>
+
+  <!--计数-->
+  <select id="findAreaByIdCount" parameterType="com.cj.core.domain.Pager" resultType="java.lang.Integer">
+    SELECT count(*)
+    FROM task_area ta
+    LEFT JOIN factory_basic_msg fbm
+    ON ta.`factory_id` = fbm.`factory_id`
+    LEFT JOIN auth_admin_popedom aap
+    ON ta.`task_area_id` = aap.`popedom_id`
+    AND aap.popedom_grade = 3
+    LEFT JOIN admin a
+    ON aap.`admin_id` = a.`admin_id`
+    LEFT JOIN admin_info ai
+    ON aap.`admin_id` = ai.`admin_id`
+
+    WHERE fbm.`branch_company_id`= #{parameters.branchCompanyId}
+
+    <if test="parameters.containsKey('factoryId')">
+      and fbm.`factory_id` = #{parameters.factoryId}
+    </if>
+    <if test="parameters.containsKey('areaId')">
+      and ta.`task_area_id` = #{parameters.areaId}
+    </if>
+  </select>
+
+
+  <!--根据气矿id和作业区名称查重-->
+  <select id="findAreaByName" resultMap="BaseResultMap">
+    SELECT *
+    FROM task_area
+    WHERE factory_id = #{id}
+          AND task_area_name = #{name}
+    LIMIT 1
+  </select>
+
+  <!--添加作业区信息 主键返回-->
+  <insert id="addArea" parameterType="com.cj.common.entity.TaskArea" useGeneratedKeys="true" keyProperty="taskAreaId">
+    INSERT INTO task_area (factory_id,task_area_name) VALUES (#{factoryId},#{taskAreaName})
+  </insert>
+
+
+  <!--映射-->
+  <resultMap id="findFactoryAndAreaNameMap" type="com.cj.organization.entity.ExprotOrganInfo">
+    <result column="factory_name" property="factoryName"/>
+    <result column="task_area_name" property="taskAreaName"/>
+  </resultMap>
+  <!--根据分公司id查询 查询 气矿、作业区名称-->
+  <select id="findFactoryAndAreaName" parameterType="java.lang.Long" resultMap="findFactoryAndAreaNameMap">
+    SELECT fbm.`factory_name`,ta.`task_area_name`
+    FROM task_area ta
+      LEFT JOIN factory_basic_msg fbm
+        ON ta.`factory_id` = fbm.`factory_id`
+    WHERE fbm.`branch_company_id` = #{branchCompanyId}
+  </select>
+
+  <!--根据气矿id查询所有作业区-->
+    <select id="findAreaByFactoryId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+      SELECT *
+      FROM task_area
+      WHERE factory_id = #{factoryId}
+    </select>
+
+</mapper>

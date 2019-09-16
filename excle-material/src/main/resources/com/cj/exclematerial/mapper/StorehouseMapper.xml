@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclematerial.mapper.StorehouseMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.Storehouse" >
+    <id column="storehouse_id" property="storehouseId" jdbcType="BIGINT" />
+    <result column="factory_id" property="factoryId" jdbcType="BIGINT" />
+    <result column="task_area_id" property="taskAreaId" jdbcType="BIGINT" />
+    <result column="station_id" property="stationId" jdbcType="BIGINT" />
+    <result column="storehouse_name" property="storehouseName" jdbcType="VARCHAR" />
+    <result column="storehouse_leave" property="storehouseLeave" jdbcType="VARCHAR" />
+    <result column="storehouse_address" property="storehouseAddress" jdbcType="VARCHAR" />
+    <result column="storehouse_linkman" property="storehouseLinkman" jdbcType="VARCHAR" />
+    <result column="storehouse_linkman_telphone" property="storehouseLinkmanTelphone" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="ExcelResultMap" type="com.cj.exclematerial.pojo.StorehouseBo" >
+    <id column="storehouse_id" property="storehouseId" jdbcType="BIGINT" />
+    <result column="factory_id" property="factoryId" jdbcType="BIGINT" />
+    <result column="factory_name" property="factoryName" jdbcType="VARCHAR" />
+    <result column="storehouse_name" property="storehouseName" jdbcType="VARCHAR" />
+    <result column="storehouse_leave" property="storehouseLeave" jdbcType="VARCHAR" />
+    <result column="storehouse_address" property="storehouseAddress" jdbcType="VARCHAR" />
+    <result column="storehouse_linkman" property="storehouseLinkman" jdbcType="VARCHAR" />
+    <result column="storehouse_linkman_telphone" property="storehouseLinkmanTelphone" jdbcType="BIGINT" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    storehouse_id, factory_id, task_area_id, station_id, storehouse_name, storehouse_leave, 
+    storehouse_address, storehouse_linkman, storehouse_linkman_telphone
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from storehouse
+    where storehouse_id = #{storehouseId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from storehouse
+    where storehouse_id = #{storehouseId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.Storehouse" >
+    <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="storehouseId">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into storehouse (storehouse_id, factory_id, task_area_id, 
+      station_id, storehouse_name, storehouse_leave, 
+      storehouse_address, storehouse_linkman, storehouse_linkman_telphone
+      )
+    values (#{storehouseId,jdbcType=BIGINT}, #{factoryId,jdbcType=BIGINT}, #{taskAreaId,jdbcType=BIGINT}, 
+      #{stationId,jdbcType=BIGINT}, #{storehouseName,jdbcType=VARCHAR}, #{storehouseLeave,jdbcType=VARCHAR}, 
+      #{storehouseAddress,jdbcType=VARCHAR}, #{storehouseLinkman,jdbcType=VARCHAR}, #{storehouseLinkmanTelphone,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.Storehouse" >
+    insert into storehouse
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="storehouseId != null" >
+        storehouse_id,
+      </if>
+      <if test="factoryId != null" >
+        factory_id,
+      </if>
+      <if test="taskAreaId != null" >
+        task_area_id,
+      </if>
+      <if test="stationId != null" >
+        station_id,
+      </if>
+      <if test="storehouseName != null" >
+        storehouse_name,
+      </if>
+      <if test="storehouseLeave != null" >
+        storehouse_leave,
+      </if>
+      <if test="storehouseAddress != null" >
+        storehouse_address,
+      </if>
+      <if test="storehouseLinkman != null" >
+        storehouse_linkman,
+      </if>
+      <if test="storehouseLinkmanTelphone != null" >
+        storehouse_linkman_telphone,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="storehouseId != null" >
+        #{storehouseId,jdbcType=BIGINT},
+      </if>
+      <if test="factoryId != null" >
+        #{factoryId,jdbcType=BIGINT},
+      </if>
+      <if test="taskAreaId != null" >
+        #{taskAreaId,jdbcType=BIGINT},
+      </if>
+      <if test="stationId != null" >
+        #{stationId,jdbcType=BIGINT},
+      </if>
+      <if test="storehouseName != null" >
+        #{storehouseName,jdbcType=VARCHAR},
+      </if>
+      <if test="storehouseLeave != null" >
+        #{storehouseLeave,jdbcType=VARCHAR},
+      </if>
+      <if test="storehouseAddress != null" >
+        #{storehouseAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="storehouseLinkman != null" >
+        #{storehouseLinkman,jdbcType=VARCHAR},
+      </if>
+      <if test="storehouseLinkmanTelphone != null" >
+        #{storehouseLinkmanTelphone,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.Storehouse" >
+    update storehouse
+    <set >
+      <if test="factoryId != null" >
+        factory_id = #{factoryId,jdbcType=BIGINT},
+      </if>
+      <if test="taskAreaId != null" >
+        task_area_id = #{taskAreaId,jdbcType=BIGINT},
+      </if>
+      <if test="stationId != null" >
+        station_id = #{stationId,jdbcType=BIGINT},
+      </if>
+      <if test="storehouseName != null" >
+        storehouse_name = #{storehouseName,jdbcType=VARCHAR},
+      </if>
+      <if test="storehouseLeave != null" >
+        storehouse_leave = #{storehouseLeave,jdbcType=VARCHAR},
+      </if>
+      <if test="storehouseAddress != null" >
+        storehouse_address = #{storehouseAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="storehouseLinkman != null" >
+        storehouse_linkman = #{storehouseLinkman,jdbcType=VARCHAR},
+      </if>
+      <if test="storehouseLinkmanTelphone != null" >
+        storehouse_linkman_telphone = #{storehouseLinkmanTelphone,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where storehouse_id = #{storehouseId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.Storehouse" >
+    update storehouse
+    set factory_id = #{factoryId,jdbcType=BIGINT},
+      task_area_id = #{taskAreaId,jdbcType=BIGINT},
+      station_id = #{stationId,jdbcType=BIGINT},
+      storehouse_name = #{storehouseName,jdbcType=VARCHAR},
+      storehouse_leave = #{storehouseLeave,jdbcType=VARCHAR},
+      storehouse_address = #{storehouseAddress,jdbcType=VARCHAR},
+      storehouse_linkman = #{storehouseLinkman,jdbcType=VARCHAR},
+      storehouse_linkman_telphone = #{storehouseLinkmanTelphone,jdbcType=VARCHAR}
+    where storehouse_id = #{storehouseId,jdbcType=BIGINT}
+  </update>
+<!--根据Query查询储物库-->
+  <select id="findByQuery" resultType="java.util.Map" parameterType="java.util.Map" >
+    select
+    storehouse_id storehouseId,
+    factory_basic_msg.factory_id factoryId,
+    factory_basic_msg.factory_name factoryName,
+    storehouse_name storehouseName,
+    storehouse_leave storehouseLeave,
+    storehouse_address storehouseAddress,
+    storehouse_linkman storehouseLinkman,
+    storehouse_linkman_telphone storehouseLinkmanTelphone
+    from storehouse
+    LEFT JOIN factory_basic_msg
+    ON factory_basic_msg.factory_id=storehouse.factory_id
+    WHERE 1=1
+    <if test="factoryId!=null">
+      AND factory_basic_msg.factory_id=#{factoryId}
+    </if>
+    <if test="taskAreaId!=null">
+      AND taskarea_id=#{taskAreaId}
+    </if>
+    <if test="stationId!=null">
+      AND station_id=#{stationId}
+    </if>
+    <!--<if test="datetime!=null">-->
+      <!--AND YEAR(table_year)=#{datetime}-->
+    <!--</if>-->
+  </select>
+
+  <!--导出应急物资储备库Excle-->
+  <select id="selectExcelStorehouse" resultMap="ExcelResultMap" parameterType="java.util.Map" >
+    select
+    s.storehouse_id, s.factory_id, fbm.factory_name,s.task_area_id, s.station_id, s.storehouse_name, s.storehouse_leave,
+    s.storehouse_address, s.storehouse_linkman, s.storehouse_linkman_telphone
+    from storehouse s
+    LEFT JOIN factory_basic_msg fbm ON fbm.factory_id=s.factory_id
+    WHERE 1=1
+    <if test="factoryId!=null">
+      AND s.factory_id=#{factoryId}
+    </if>
+    <if test="taskAreaId!=null">
+      AND s.taskarea_id=#{taskAreaId}
+    </if>
+    <if test="stationId!=null">
+      AND s.station_id=#{stationId}
+    </if>
+
+  </select>
+
+  <!--根据所属矿，厂ID 查询仓库id-->
+  <select id="findByFactoryId" resultType="java.lang.Long" parameterType="java.lang.Long">
+    select
+    storehouse_id
+    from storehouse
+    where factory_id = #{id}
+  </select>
+
+
+</mapper>

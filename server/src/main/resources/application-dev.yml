@@ -1,0 +1,27 @@
+jasypt:
+  encryptor:
+    password: root
+server:
+  port: 8085
+
+web:
+  upload-path: D:/file/oil/
+dbip: 59.110.164.54
+dbname: oildev
+spring:
+  datasource:
+    url: jdbc:mysql://${dbip}:63306/${dbname}?characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true
+    username: ENC(9aNi3IHj2H6kZr0ODNHtyA==)
+    password: ENC(TkOCIol7cpFd41MfpYYQBK+giiV3zOn3)
+    driverClassName: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    logSlowSql: true
+datapram:
+  tooldir: mysqldump
+  ip: ${dbip}
+  dbname: ${dbname}
+  username: ENC(9aNi3IHj2H6kZr0ODNHtyA==)
+  password: ENC(TkOCIol7cpFd41MfpYYQBK+giiV3zOn3)
+  dir: D:/file/oil/sql/
+
+

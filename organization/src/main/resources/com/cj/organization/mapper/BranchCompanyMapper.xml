@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.organization.mapper.BranchCompanyMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.BranchCompany" >
+    <id column="branch_company_id" property="branchCompanyId" jdbcType="BIGINT" />
+    <result column="branch_company_name" property="branchCompanyName" jdbcType="VARCHAR" />
+    <result column="popedom_grade" property="popedomGrade" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    branch_company_id, branch_company_name, popedom_grade
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from branch_company
+    where branch_company_id = #{branchCompanyId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from branch_company
+    where branch_company_id = #{branchCompanyId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.BranchCompany" >
+    insert into branch_company (branch_company_id, branch_company_name, 
+      popedom_grade)
+    values (#{branchCompanyId,jdbcType=BIGINT}, #{branchCompanyName,jdbcType=VARCHAR}, 
+      #{popedomGrade,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.BranchCompany" >
+    insert into branch_company
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="branchCompanyId != null" >
+        branch_company_id,
+      </if>
+      <if test="branchCompanyName != null" >
+        branch_company_name,
+      </if>
+      <if test="popedomGrade != null" >
+        popedom_grade,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="branchCompanyId != null" >
+        #{branchCompanyId,jdbcType=BIGINT},
+      </if>
+      <if test="branchCompanyName != null" >
+        #{branchCompanyName,jdbcType=VARCHAR},
+      </if>
+      <if test="popedomGrade != null" >
+        #{popedomGrade,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.BranchCompany" >
+    update branch_company
+    <set >
+      <if test="branchCompanyName != null" >
+        branch_company_name = #{branchCompanyName,jdbcType=VARCHAR},
+      </if>
+      <if test="popedomGrade != null" >
+        popedom_grade = #{popedomGrade,jdbcType=CHAR},
+      </if>
+    </set>
+    where branch_company_id = #{branchCompanyId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.BranchCompany" >
+    update branch_company
+    set branch_company_name = #{branchCompanyName,jdbcType=VARCHAR},
+      popedom_grade = #{popedomGrade,jdbcType=CHAR}
+    where branch_company_id = #{branchCompanyId,jdbcType=BIGINT}
+  </update>
+
+
+  <!--根据名称查重-->
+  <select id="findBCompanyByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select *
+    from branch_company
+    where branch_company_name = #{str}
+    limit 1
+  </select>
+
+  <!--添加  主键返回-->
+  <insert id="addBCompany" parameterType="com.cj.common.entity.BranchCompany" useGeneratedKeys="true" keyProperty="branchCompanyId">
+    INSERT INTO branch_company (branch_company_name) VALUES (#{branchCompanyName})
+  </insert>
+
+</mapper>

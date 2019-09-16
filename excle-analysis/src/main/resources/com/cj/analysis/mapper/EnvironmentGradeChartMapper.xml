@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cj.analysis.mapper.EnvironmentGradeChartMapper">
+
+
+    <resultMap id="TaskAreaChartMap" type="map">
+        <result column="major" jdbcType="VARCHAR" property="major" />
+        <result column="larger" jdbcType="VARCHAR" property="larger" />
+        <result column="general" jdbcType="VARCHAR" property="general" />
+    </resultMap>
+    <select id="findTaskAreaChart" resultMap="TaskAreaChartMap" parameterType="com.cj.analysis.vo.VoChart">
+        SELECT
+        COUNT(CASE WHEN environment_grade.result='重大' THEN environment_grade.result END) AS 'major',
+        COUNT(CASE WHEN environment_grade.result='较大' THEN environment_grade.result END) AS 'larger',
+        COUNT(CASE WHEN environment_grade.result='一般' THEN environment_grade.result END) AS 'general'
+        from
+        task_area
+        JOIN station ON task_area.task_area_id=station.task_area_id
+        <if test="factoryIdList != null">
+            AND task_area.factory_id IN
+            <foreach collection="factoryIdList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="taskAreaIdList != null">
+            AND task_area.task_area_id in
+            <foreach collection="taskAreaIdList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        LEFT JOIN environment_grade ON station.station_id=environment_grade.station_id
+        <if test="shape == 1">
+            JOIN factory_type ON station.factory_type_id= factory_type.factory_type_id
+            AND factory_type.factory_type='场站'
+        </if>
+        <if test="shape == 2">
+            JOIN factory_type ON station.factory_type_id= factory_type.factory_type_id
+            AND factory_type.factory_type='管线'
+        </if>
+        WHERE environment_grade.target=1
+        AND year(environment_grade.gradetime)=#{datetime}
+    </select>
+</mapper>

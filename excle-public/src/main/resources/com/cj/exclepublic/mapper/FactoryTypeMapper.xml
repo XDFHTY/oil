@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclepublic.mapper.FactoryTypeMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.FactoryType" >
+    <id column="factory_type_id" property="factoryTypeId" jdbcType="BIGINT" />
+    <result column="factory_type_name" property="factoryTypeName" jdbcType="VARCHAR" />
+    <result column="factory_type" property="factoryType" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    factory_type_id, factory_type_name, factory_type
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from factory_type
+    where factory_type_id = #{factoryTypeId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from factory_type
+    where factory_type_id = #{factoryTypeId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.FactoryType" >
+    insert into factory_type (factory_type_id, factory_type_name, factory_type
+      )
+    values (#{factoryTypeId,jdbcType=BIGINT}, #{factoryTypeName,jdbcType=VARCHAR}, #{factoryType,jdbcType=CHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.FactoryType" >
+    insert into factory_type
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="factoryTypeId != null" >
+        factory_type_id,
+      </if>
+      <if test="factoryTypeName != null" >
+        factory_type_name,
+      </if>
+      <if test="factoryType != null" >
+        factory_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="factoryTypeId != null" >
+        #{factoryTypeId,jdbcType=BIGINT},
+      </if>
+      <if test="factoryTypeName != null" >
+        #{factoryTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryType != null" >
+        #{factoryType,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.FactoryType" >
+    update factory_type
+    <set >
+      <if test="factoryTypeName != null" >
+        factory_type_name = #{factoryTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryType != null" >
+        factory_type = #{factoryType,jdbcType=CHAR},
+      </if>
+    </set>
+    where factory_type_id = #{factoryTypeId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.FactoryType" >
+    update factory_type
+    set factory_type_name = #{factoryTypeName,jdbcType=VARCHAR},
+      factory_type = #{factoryType,jdbcType=CHAR}
+    where factory_type_id = #{factoryTypeId,jdbcType=BIGINT}
+  </update>
+
+  <!--根据name查询信息-->
+  <select id="findFactoryTypeByName" parameterType="java.util.Arrays" resultMap="BaseResultMap">
+    SELECT
+    ft.*
+    FROM factory_type ft
+    WHERE
+    ft.factory_type_name IN
+    <foreach collection="array" item="item" index="index" separator="," open="(" close=")">
+      #{item}
+    </foreach>
+  </select>
+
+  <resultMap id="FindOrganizationRespReturn" type="com.cj.exclepublic.domain.FindOrganizationResp">
+    <result column="factory_id" property="factoryId"></result>
+    <result column="factory_name" property="factoryName"></result>
+    <result column="task_area_id" property="taskAreaId"></result>
+    <result column="task_area_name" property="taskAreaName"></result>
+    <result column="station_id" property="stationId"></result>
+    <result column="station_name" property="stationName"></result>
+    <result column="factory_type_id" property="factoryTypeId"></result>
+    <result column="factory_type_name" property="factoryTypeName"></result>
+
+  </resultMap>
+  <!--根据场站ID查询组织结构信息-->
+  <select id="findOrganization" parameterType="java.lang.Long" resultMap="FindOrganizationRespReturn">
+    SELECT
+    bc.`branch_company_id`,bc.`branch_company_name`,
+    fbm.`factory_id`,fbm.`factory_name`,
+    ta.`task_area_id`,ta.`task_area_name`,
+    s.`station_id`,s.`station_name`,
+    ft.`factory_type_id`,ft.`factory_type_name`
+
+    FROM
+    branch_company bc
+    LEFT JOIN factory_basic_msg fbm ON fbm.`branch_company_id` = bc.`branch_company_id`
+    LEFT JOIN task_area ta ON ta.`factory_id` = fbm.`factory_id`
+    LEFT JOIN station s ON s.`task_area_id` = ta.`task_area_id`
+    LEFT JOIN factory_type ft ON ft.`factory_type_id` = s.`factory_type_id`
+    WHERE
+    s.station_id = #{stationId}
+  </select>
+</mapper>

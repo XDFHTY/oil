@@ -1,0 +1,591 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cj.analysis.mapper.EnvironmentResultMapper">
+    <resultMap id="FactoryEnvironmentViewMap" type="com.cj.analysis.pojo.FactoryEnvironmentView">
+        <result column="factory_name" jdbcType="VARCHAR" property="factoryName" />
+        <result column="task_area_name" jdbcType="VARCHAR" property="taskAreaName" />
+        <result column="factory_type_name" jdbcType="VARCHAR" property="factoryTypeName" />
+        <result column="station_name" jdbcType="VARCHAR" property="stationName" />
+        <result column="result" jdbcType="VARCHAR" property="result" />
+        <association property="environmentResultView" javaType="com.cj.analysis.pojo.EnvironmentResultView">
+            <association property="gass" javaType="com.cj.analysis.pojo.EnvironmentTargetView">
+                <result column="QW" property="Q"></result>
+                <result column="EW" property="E"></result>
+                <result column="MW" property="M"></result>
+            </association>
+            <association property="water" javaType="com.cj.analysis.pojo.EnvironmentTargetView">
+                <result column="QG" property="Q"></result>
+                <result column="EG" property="E"></result>
+                <result column="MG" property="M"></result>
+            </association>
+        </association>
+    </resultMap>
+
+    <resultMap id="PipelineEnvironmentViewMap" type="com.cj.analysis.pojo.FactoryEnvironmentPipelineView">
+        <result column="factory_name" jdbcType="VARCHAR" property="factoryName" />
+        <result column="task_area_name" jdbcType="VARCHAR" property="taskAreaName" />
+        <result column="factory_type_name" jdbcType="VARCHAR" property="factoryTypeName" />
+        <result column="result" jdbcType="VARCHAR" property="result" />
+        <association property="pipelineInfoView" javaType="com.cj.analysis.pojo.PipelineInfoView">
+            <result column="station_name" jdbcType="VARCHAR" property="stationName" />
+            <result column="start_station" jdbcType="VARCHAR" property="startStation" />
+            <result column="end_station" jdbcType="VARCHAR" property="endStation" />
+        </association>
+        <association property="pipelineTargetView" javaType="com.cj.analysis.pojo.PipelineTargetView">
+            <result column="p" jdbcType="VARCHAR" property="P" />
+            <result column="c" jdbcType="VARCHAR" property="C" />
+        </association>
+    </resultMap>
+
+
+    <select id="findFactoryEnvironmentByQuery" resultMap="FactoryEnvironmentViewMap" parameterType="com.cj.analysis.vo.VoEnvironment">
+        SELECT
+        aaa.*
+        FROM
+        (
+        SELECT
+        a.factory_name,
+        a.task_area_name,
+        a.factory_type_name,
+        a.station_name,
+        a.station_id stationId,
+        MAX(CASE WHEN b.target=4 THEN b.result ELSE "" END) AS QW,
+        MAX(CASE WHEN b.target=5 THEN b.result ELSE "" END ) AS EW,
+        MAX(CASE WHEN b.target=6 THEN b.result ELSE "" END) AS MW,
+        MAX(CASE WHEN b.target=7 THEN b.result ELSE "" END) AS QG,
+        MAX(CASE WHEN b.target=8 THEN b.result ELSE "" END) AS EG,
+        MAX(CASE WHEN b.target=9 THEN b.result ELSE "" END) AS MG,
+        CONCAT(
+        MAX(CASE WHEN b.target=2 THEN b.result END),
+        "[",
+        MAX(CASE WHEN b.target=3 THEN b.result END),
+        "-大气(",
+        MAX(CASE WHEN b.target=7 THEN b.result END),
+        "-",
+        MAX(CASE WHEN b.target=9 THEN b.result END),
+        "-",
+        MAX(CASE WHEN b.target=8 THEN b.result END),
+        ") ",
+        MAX(CASE WHEN b.target=2 THEN b.result END),
+        "-水(",
+        MAX(CASE WHEN b.target=4 THEN b.result END),
+        "-",
+        MAX(CASE WHEN b.target=6 THEN b.result END),
+        "-",
+        MAX(CASE WHEN b.target=5 THEN b.result END),
+        ")]"
+
+        ) AS result
+        FROM
+        (
+        SELECT
+        station_id,factory_basic_msg.factory_name,task_area.task_area_name,factory_type.factory_type_name,station.station_name
+
+        FROM factory_basic_msg LEFT JOIN task_area ON task_area.factory_id=factory_basic_msg.factory_id
+        LEFT JOIN station ON task_area.task_area_id=station.task_area_id
+        <if test="taskAreaIdList!=null">
+            AND
+            station.task_area_id in
+            <foreach collection="taskAreaIdList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        LEFT JOIN factory_type ON station.factory_type_id=factory_type.factory_type_id
+        WHERE factory_type.factory_type='场站'
+        <if test="factoryIdList!=null">
+            AND
+            factory_basic_msg.factory_id in
+            <foreach collection="factoryIdList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        ) a
+        LEFT JOIN environment_grade b ON a.station_id=b.station_id AND YEAR(b.gradetime)=#{datetime}
+        GROUP BY a.station_id
+        ) as aaa
+        WHERE
+        1=1
+        <if test="target != null">
+            AND
+            INSTR(aaa.result,CONCAT(#{target},'['))>0
+        </if>
+        <if test="QW != null">
+            AND
+            aaa.QW = #{QW}
+        </if>
+        <if test="EW != null">
+            AND
+            aaa.EW = #{EW}
+        </if>
+        <if test="MW != null">
+            AND
+            aaa.MW = #{MW}
+        </if>
+        <if test="QG != null">
+            AND
+            aaa.QG = #{QG}
+        </if>
+        <if test="EG != null">
+            AND
+            aaa.EG = #{EG}
+        </if>
+        <if test="MG != null">
+            AND
+            aaa.MG = #{MG}
+        </if>
+    </select>
+
+
+    <resultMap id="findFactoryEnvironmentMap" type="com.cj.analysis.vo.VoResultGrade">
+        <result column="factory_name" property="factoryName"/>
+        <result column="task_area_name" property="taskAreaName"/>
+        <result column="factory_type_name" property="factoryTypeName"/>
+        <result column="station_name" property="stationName"/>
+        <result column="stationId" property="stationId"/>
+        <result column="QW" property="qw"/>
+        <result column="EW" property="ew"/>
+        <result column="MW" property="mw"/>
+        <result column="QG" property="qg"/>
+        <result column="EG" property="eg"/>
+        <result column="MG" property="mg"/>
+        <result column="result" property="result"/>
+        <result column="tableName" property="tableName"/>
+
+        <result column="start_station" property="startStation"/>
+        <result column="end_station" property="endStation"/>
+        <result column="p" property="p"/>
+        <result column="c" property="c"/>
+    </resultMap>
+    <select id="findFactoryEnvironment" parameterType="com.cj.analysis.vo.VoEnvironment"
+            resultMap="com.cj.analysis.mapper.EnvironmentResultMapper.findFactoryEnvironmentMap,
+            com.cj.common.mapper.PublicMapper.PagerTotal" >
+
+        SELECT
+        SQL_CALC_FOUND_ROWS aaa.*
+        FROM
+        (
+        SELECT
+        a.factory_name,
+        a.task_area_name,
+        a.factory_type_name,
+        a.station_name,
+        a.station_id stationId,
+        MAX(
+        CASE
+        WHEN b.target = 4
+        THEN b.result
+        END
+        ) AS QW,
+        MAX(
+        CASE
+        WHEN b.target = 5
+        THEN b.result
+        END
+        ) AS EW,
+        MAX(
+        CASE
+        WHEN b.target = 6
+        THEN b.result
+        END
+        ) AS MW,
+        MAX(
+        CASE
+        WHEN b.target = 7
+        THEN b.result
+        END
+        ) AS QG,
+        MAX(
+        CASE
+        WHEN b.target = 8
+        THEN b.result
+        END
+        ) AS EG,
+        MAX(
+        CASE
+        WHEN b.target = 9
+        THEN b.result
+        END
+        ) AS MG,
+        CASE
+        WHEN factory_type_name = '输气场站'
+        THEN CONCAT(
+        MAX(
+        CASE
+        WHEN b.target = 1
+        THEN b.result
+        END
+        ),
+        '[一般-大气（E0）+一般-水（E0)]'
+        )
+        WHEN factory_type_name NOT IN ('输气场站')
+        THEN CONCAT(
+        MAX(
+        CASE
+        WHEN b.target = 1
+        THEN b.result
+        END
+        ),
+        "[",
+        MAX(
+        CASE
+        WHEN b.target = 3
+        THEN b.result
+        END
+        ),
+        "-大气(",
+        MAX(
+        CASE
+        WHEN b.target = 7
+        THEN b.result
+        END
+        ),
+        "-",
+        MAX(
+        CASE
+        WHEN b.target = 9
+        THEN b.result
+        END
+        ),
+        "-",
+        MAX(
+        CASE
+        WHEN b.target = 8
+        THEN b.result
+        END
+        ),
+        ") ",
+        MAX(
+        CASE
+        WHEN b.target = 2
+        THEN b.result
+        END
+        ),
+        "-水(",
+        MAX(
+        CASE
+        WHEN b.target = 4
+        THEN b.result
+        END
+        ),
+        "-",
+        MAX(
+        CASE
+        WHEN b.target = 6
+        THEN b.result
+        END
+        ),
+        "-",
+        MAX(
+        CASE
+        WHEN b.target = 5
+        THEN b.result
+        END
+        ),
+        ")]"
+        )
+        END AS result,
+        @tablename := '基本信息' AS tableName
+        FROM
+
+        (
+        SELECT
+        station_id,factory_basic_msg.factory_name,task_area.task_area_name,factory_type.factory_type_name,station.station_name
+
+        FROM factory_basic_msg LEFT JOIN task_area ON task_area.factory_id=factory_basic_msg.factory_id
+        LEFT JOIN station ON task_area.task_area_id=station.task_area_id
+        <if test="taskAreaIdList!=null">
+            AND
+            station.task_area_id in
+            <foreach collection="taskAreaIdList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        LEFT JOIN factory_type ON station.factory_type_id=factory_type.factory_type_id
+        WHERE factory_type.factory_type='场站'
+        <if test="factoryIdList!=null">
+            AND
+            factory_basic_msg.factory_id in
+            <foreach collection="factoryIdList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        ) a
+        LEFT JOIN environment_grade b ON a.station_id=b.station_id
+        WHERE
+        YEAR(b.gradetime)=#{datetime}
+        ) aaa
+        WHERE
+        1=1
+        <if test="target != null">
+            AND
+            INSTR(aaa.result,CONCAT(#{target},'['))>0
+        </if>
+        <if test="QW != null">
+            AND
+            aaa.QW = #{QW}
+        </if>
+        <if test="EW != null">
+            AND
+            aaa.EW = #{EW}
+        </if>
+        <if test="MW != null">
+            AND
+            aaa.MW = #{MW}
+        </if>
+        <if test="QG != null">
+            AND
+            aaa.QG = #{QG}
+        </if>
+        <if test="EG != null">
+            AND
+            aaa.EG = #{EG}
+        </if>
+        <if test="MG != null">
+            AND
+            aaa.MG = #{MG}
+        </if>
+        LIMIT #{currentPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER};
+
+        SELECT FOUND_ROWS() AS total;
+    </select>
+
+    <select id="findPipelineEnvironmentByQuery" resultMap="PipelineEnvironmentViewMap" parameterType="com.cj.analysis.vo.VoEnvironment">
+        SELECT
+        aaa.*
+        FROM
+        (
+        SELECT
+        factory_basic_msg.factory_name,
+        task_area.task_area_name,
+        factory_type.factory_type_name,
+        MAX(CASE WHEN excle_table_structure.cell_msg='全管线起始场站' THEN temp.cell_msg END) AS 'start_station',
+        MAX(CASE WHEN excle_table_structure.cell_msg='全管线终止场站' THEN temp.cell_msg END ) AS 'end_station',
+        station.station_name,
+        MAX(CASE WHEN environment_grade.target=10 THEN environment_grade.result END ) AS 'p',
+        MAX(CASE WHEN environment_grade.target=11 THEN environment_grade.result END ) AS 'c',
+        MAX(CASE WHEN environment_grade.target=1 THEN environment_grade.result END ) AS 'result'
+        FROM factory_basic_msg LEFT JOIN task_area ON task_area.factory_id=factory_basic_msg.factory_id
+        <if test="taskAreaIdList!=null">
+            AND task_area.task_area_id IN
+            <foreach collection="taskAreaIdList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        LEFT JOIN station ON task_area.task_area_id=station.task_area_id
+        LEFT JOIN factory_type ON station.factory_type_id=factory_type.factory_type_id
+        LEFT JOIN auth_excle_factory ON auth_excle_factory.factory_type_id=station.factory_type_id
+        LEFT JOIN excle_table ON excle_table.excle_table_id=auth_excle_factory.excle_table_id
+        LEFT JOIN excle_table_structure ON excle_table.excle_table_id=excle_table_structure.excle_table_id
+        LEFT JOIN excle_table_structure temp ON excle_table_structure.start_row=temp.start_row
+        AND temp.start_col=excle_table_structure.start_col+1
+        AND temp.excle_table_id=excle_table_structure.excle_table_id
+        LEFT JOIN environment_grade ON station.station_id=environment_grade.station_id
+        WHERE 1=1
+        <if test="factoryIdList!=null">
+            AND factory_basic_msg.factory_id
+            IN
+            <foreach collection="factoryIdList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        AND factory_type.factory_type_id in(7,8,9) AND excle_table_name='基本信息' AND excle_table_structure.cell_msg
+        in('全管线起始场站','全管线终止场站')
+        GROUP BY(station.station_id)
+        ) as aaa
+        WHERE
+        1=1
+        <if test="target != null">
+            AND
+            INSTR(aaa.result,CONCAT(#{target},'['))>0
+        </if>
+        <if test="PMAX != null AND PMIN != null">
+            aaa.p > #{PMIN}
+            AND
+            #{PMAX} > aaa.p
+        </if>
+        <if test="CMAX != null AND CMIN != null">
+            aaa.c > #{CMIN}
+            AND
+            #{CMAX} > aaa.c
+        </if>
+    </select>
+
+    <select id="findPipelineEnvironment" resultMap="com.cj.analysis.mapper.EnvironmentResultMapper.findFactoryEnvironmentMap" parameterType="com.cj.analysis.vo.VoEnvironment">
+
+        SELECT
+        aaa.*
+        FROM
+        (
+        SELECT
+        factory_basic_msg.factory_name,
+        task_area.task_area_name,
+        factory_type.factory_type_name,
+        MAX(CASE WHEN excle_table_structure.cell_msg='全管线起始场站' THEN tcr.cell_msg END) AS 'start_station',
+        MAX(CASE WHEN excle_table_structure.cell_msg='全管线终止场站' THEN tcr.cell_msg END ) AS 'end_station',
+        station.station_name,
+        station.station_id stationId,
+        MAX(CASE WHEN environment_grade.target=10 THEN environment_grade.result END ) AS 'p',
+        MAX(CASE WHEN environment_grade.target=11 THEN environment_grade.result END ) AS 'c',
+        CONCAT(
+        MAX(CASE WHEN environment_grade.target=1 THEN environment_grade.result END ),
+        "环境风险"
+        )AS 'result',
+        @tablename:='基本信息' AS tableName
+        FROM factory_basic_msg LEFT JOIN task_area ON task_area.factory_id=factory_basic_msg.factory_id
+        <if test="taskAreaIdList!=null">
+            AND task_area.task_area_id IN
+            <foreach collection="taskAreaIdList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        LEFT JOIN station ON task_area.task_area_id=station.task_area_id
+        LEFT JOIN factory_type ON station.factory_type_id=factory_type.factory_type_id
+        LEFT JOIN auth_excle_factory ON auth_excle_factory.factory_type_id=station.factory_type_id
+        LEFT JOIN excle_table ON excle_table.excle_table_id=auth_excle_factory.excle_table_id
+        LEFT JOIN excle_table_structure ON excle_table.excle_table_id=excle_table_structure.excle_table_id
+        LEFT JOIN excle_table_structure temp ON excle_table.excle_table_id=temp.excle_table_id
+        LEFT JOIN table_cell_record tcr ON temp.excle_table_structure_id=tcr.excle_table_structure_id
+        LEFT JOIN table_record tr ON tcr.table_record_id = tr.table_record_id
+        LEFT JOIN environment_grade ON station.station_id=environment_grade.station_id
+        WHERE 1=1
+        <if test="factoryIdList!=null">
+            AND factory_basic_msg.factory_id
+            IN
+            <foreach collection="factoryIdList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        AND factory_type.factory_type_id in(7,8,9) AND excle_table_name='基本信息' AND excle_table_structure.cell_msg
+        in('全管线起始场站','全管线终止场站')
+        AND excle_table_structure.start_col+1=temp.start_col
+        AND excle_table_structure.start_row=temp.start_row
+        ) aaa
+        WHERE
+        1=1
+        <if test="target != null">
+            AND
+            INSTR(aaa.result,CONCAT(#{target},'['))>0
+        </if>
+        <if test="PMAX != null AND PMIN != null">
+            aaa.p > #{PMIN}
+            AND
+            #{PMAX} > aaa.p
+        </if>
+        <if test="CMAX != null AND CMIN != null">
+            aaa.c > #{CMIN}
+            AND
+            #{CMAX} > aaa.c
+        </if>
+
+        LIMIT #{currentPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+    </select>
+    <select id="countFactoryEnvironment" resultType="java.lang.Integer" parameterType="com.cj.analysis.vo.VoEnvironment">
+        SELECT COUNT(*)
+
+        FROM
+        (
+        SELECT station_id,factory_basic_msg.factory_name,task_area.task_area_name,factory_type.factory_type_name,station.station_name
+
+        FROM factory_basic_msg LEFT JOIN task_area ON task_area.factory_id=factory_basic_msg.factory_id
+
+        LEFT JOIN station ON task_area.task_area_id=station.task_area_id
+        <if test="taskAreaIdList!=null">
+            AND
+            station.task_area_id in
+            <foreach collection="taskAreaIdList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        LEFT JOIN factory_type ON station.factory_type_id=factory_type.factory_type_id WHERE
+        factory_basic_msg.factory_id in
+        <if test="factoryIdList!=null">
+            <foreach collection="factoryIdList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        ) a
+
+        LEFT JOIN environment_grade b ON a.station_id=b.station_id AND b.target=4 AND YEAR(b.gradetime)=#{datetime}
+
+        LEFT JOIN environment_grade c ON a.station_id=c.station_id AND c.target=5 AND YEAR(c.gradetime)=#{datetime}
+
+        LEFT JOIN environment_grade d ON a.station_id=d.station_id AND d.target=6 AND YEAR(d.gradetime)=#{datetime}
+
+        LEFT JOIN environment_grade e ON a.station_id=e.station_id AND e.target=7 AND YEAR(e.gradetime)=#{datetime}
+
+        LEFT JOIN environment_grade f ON a.station_id=f.station_id AND f.target=8 AND YEAR(f.gradetime)=#{datetime}
+
+        LEFT JOIN environment_grade g ON a.station_id=g.station_id AND g.target=9 AND YEAR(g.gradetime)=#{datetime}
+
+        LEFT JOIN environment_grade h ON a.station_id=h.station_id AND h.target=1 AND YEAR(c.gradetime)=#{datetime}
+    </select>
+
+    <select id="countPipelineEnvironment" resultType="java.lang.Integer" parameterType="com.cj.analysis.vo.VoEnvironment">
+        SELECT
+        COUNT(1)
+        FROM
+        (
+        SELECT
+        factory_basic_msg.factory_name,
+        task_area.task_area_name,
+        factory_type.factory_type_name,
+        MAX(CASE WHEN excle_table_structure.cell_msg='全管线起始场站' THEN tcr.cell_msg END) AS 'start_station',
+        MAX(CASE WHEN excle_table_structure.cell_msg='全管线终止场站' THEN tcr.cell_msg END ) AS 'end_station',
+        station.station_name,
+        station.station_id stationId,
+        MAX(CASE WHEN environment_grade.target=10 THEN environment_grade.result END ) AS 'p',
+        MAX(CASE WHEN environment_grade.target=11 THEN environment_grade.result END ) AS 'c',
+        CONCAT(
+        MAX(CASE WHEN environment_grade.target=1 THEN environment_grade.result END ),
+        "环境风险"
+        )AS 'result',
+        @tablename:='基本信息' AS tableName
+        FROM factory_basic_msg LEFT JOIN task_area ON task_area.factory_id=factory_basic_msg.factory_id
+        <if test="taskAreaIdList!=null">
+            AND task_area.task_area_id IN
+            <foreach collection="taskAreaIdList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        LEFT JOIN station ON task_area.task_area_id=station.task_area_id
+        LEFT JOIN factory_type ON station.factory_type_id=factory_type.factory_type_id
+        LEFT JOIN auth_excle_factory ON auth_excle_factory.factory_type_id=station.factory_type_id
+        LEFT JOIN excle_table ON excle_table.excle_table_id=auth_excle_factory.excle_table_id
+        LEFT JOIN excle_table_structure ON excle_table.excle_table_id=excle_table_structure.excle_table_id
+        LEFT JOIN excle_table_structure temp ON excle_table.excle_table_id=temp.excle_table_id
+        LEFT JOIN table_cell_record tcr ON temp.excle_table_structure_id=tcr.excle_table_structure_id
+        LEFT JOIN table_record tr ON tcr.table_record_id = tr.table_record_id
+        LEFT JOIN environment_grade ON station.station_id=environment_grade.station_id
+        WHERE 1=1
+        <if test="factoryIdList!=null">
+            AND factory_basic_msg.factory_id
+            IN
+            <foreach collection="factoryIdList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        AND factory_type.factory_type_id in(7,8,9) AND excle_table_name='基本信息' AND excle_table_structure.cell_msg
+        in('全管线起始场站','全管线终止场站')
+        AND excle_table_structure.start_col+1=temp.start_col
+        AND excle_table_structure.start_row=temp.start_row
+        ) aaa
+        WHERE
+        <if test="target != null">
+            INSTR(aaa.result,CONCAT(#{target},'['))>0
+        </if>
+        <if test="PMAX != null AND PMIN != null">
+            aaa.p > #{PMIN}
+            AND
+            #{PMAX} > aaa.p
+        </if>
+        <if test="CMAX != null AND CMIN != null">
+            aaa.c > #{CMIN}
+            AND
+            #{CMAX} > aaa.c
+        </if>
+
+
+    </select>
+
+
+</mapper>

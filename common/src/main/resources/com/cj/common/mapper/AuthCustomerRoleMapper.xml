@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.common.mapper.AuthCustomerRoleMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.AuthCustomerRole" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="customer_id" property="customerId" jdbcType="BIGINT" />
+    <result column="role_id" property="roleId" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, customer_id, role_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from auth_customer_role
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from auth_customer_role
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.AuthCustomerRole" >
+    insert into auth_customer_role (id, customer_id, role_id
+      )
+    values (#{id,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{roleId,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.AuthCustomerRole" >
+    insert into auth_customer_role
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="customerId != null" >
+        customer_id,
+      </if>
+      <if test="roleId != null" >
+        role_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="customerId != null" >
+        #{customerId,jdbcType=BIGINT},
+      </if>
+      <if test="roleId != null" >
+        #{roleId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.AuthCustomerRole" >
+    update auth_customer_role
+    <set >
+      <if test="customerId != null" >
+        customer_id = #{customerId,jdbcType=BIGINT},
+      </if>
+      <if test="roleId != null" >
+        role_id = #{roleId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.AuthCustomerRole" >
+    update auth_customer_role
+    set customer_id = #{customerId,jdbcType=BIGINT},
+      role_id = #{roleId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <!--统计使用此角色的用户数量-->
+  <select id="findCustomerNumByRoleId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+    SELECT
+    COUNT(*)
+    FROM
+    auth_customer_role acr
+    WHERE
+    acr.role_id = #{roleId}
+  </select>
+
+
+  <!--映射-->
+  <resultMap id="findOrganizationByBCMap" type="com.cj.common.pojo.Organization">
+    <result column="factory_id" property="factoryId"/>
+    <result column="factory_name" property="factoryName"/>
+    <collection property="taskAreaAndStationList" ofType="com.cj.common.pojo.TaskAreaAndStation" javaType="java.util.ArrayList">
+      <result column="factory_id" property="factoryId"/>
+      <result column="task_area_id" property="taskAreaId"/>
+      <result column="task_area_name" property="taskAreaName"/>
+      <collection property="respStationList" ofType="com.cj.common.pojo.RespStation" javaType="java.util.ArrayList">
+        <result column="task_area_id" property="taskAreaId"/>
+        <result column="station_id" property="stationId"/>
+        <result column="station_name" property="stationName"/>
+        <result column="factory_type_id" property="factoryTypeId"/>
+        <result column="factory_type" property="factoryType"/>
+        <result column="factory_type_name" property="factoryTypeName"/>
+      </collection>
+    </collection>
+  </resultMap>
+  <!--分公司级  查询全部组织机构-->
+  <select id="findOrganizationByBC" resultMap="findOrganizationByBCMap">
+    SELECT fbm.`factory_id`,fbm.`factory_name`,ta.`task_area_id`,ta.`task_area_name`
+      ,s.`station_id`,s.`station_name`,ft.`factory_type_id`,ft.`factory_type`,ft.`factory_type_name`
+    FROM factory_basic_msg fbm
+      LEFT JOIN task_area ta ON fbm.`factory_id` = ta.`factory_id`
+      LEFT JOIN station s ON ta.`task_area_id` = s.`task_area_id`
+      LEFT JOIN factory_type ft ON s.`factory_type_id` = ft.`factory_type_id`
+    ORDER BY factory_id,
+      task_area_id,
+      station_id
+  </select>
+
+  <!--气矿级  根据adminId查询所管理的机构-->
+  <select id="findOrganizationByFactory" parameterType="java.lang.Long" resultMap="findOrganizationByBCMap">
+    SELECT fbm.`factory_id`,fbm.`factory_name`,ta.`task_area_id`,ta.`task_area_name`
+      ,s.`station_id`,s.`station_name`,ft.`factory_type_id`,ft.`factory_type`,ft.`factory_type_name`
+    FROM auth_admin_popedom aap
+      LEFT JOIN factory_basic_msg fbm ON aap.`popedom_id` = fbm.`factory_id`
+      LEFT JOIN task_area ta ON fbm.`factory_id` = ta.`factory_id`
+      LEFT JOIN station s ON s.`task_area_id` = ta.`task_area_id`
+      LEFT JOIN factory_type ft ON s.`factory_type_id` = ft.`factory_type_id`
+    WHERE aap.admin_id = #{adminId}
+          AND aap.`popedom_grade` = 2
+    ORDER BY task_area_id,station_id
+  </select>
+
+
+  <!--作业区级  根据adminId查询所管理的机构-->
+  <select id="findOrganizationByTaskArea" parameterType="java.lang.Long" resultMap="findOrganizationByBCMap">
+    SELECT fbm.`factory_id`,fbm.`factory_name`,ta.`task_area_id`,ta.`task_area_name`
+      ,s.`station_id`,s.`station_name`,ft.`factory_type_id`,ft.`factory_type`,ft.`factory_type_name`
+    FROM auth_admin_popedom aap
+      LEFT JOIN task_area ta ON aap.`popedom_id` = ta.`task_area_id`
+      LEFT JOIN factory_basic_msg fbm ON ta.`factory_id` = fbm.`factory_id`
+      LEFT JOIN station s ON s.`task_area_id` = ta.`task_area_id`
+      LEFT JOIN factory_type ft ON s.`factory_type_id` = ft.`factory_type_id`
+    WHERE aap.admin_id = #{adminId} AND aap.`popedom_grade` = 3
+    ORDER BY station_id
+  </select>
+
+  <!--场站级  根据adminId查询所管理的机构-->
+  <select id="findOrganizationByStation" parameterType="java.lang.Long" resultMap="findOrganizationByBCMap">
+    SELECT fbm.`factory_id`,fbm.`factory_name`,ta.`task_area_id`,ta.`task_area_name`
+      ,s.`station_id`,s.`station_name`,ft.`factory_type_id`,ft.`factory_type`,ft.`factory_type_name`
+    FROM auth_admin_popedom aap
+      LEFT JOIN station s ON s.`station_id` = aap.`popedom_id`
+      LEFT JOIN task_area ta ON s.`task_area_id` = ta.`task_area_id`
+      LEFT JOIN factory_basic_msg fbm ON ta.`factory_id` = fbm.`factory_id`
+      LEFT JOIN factory_type ft ON s.`factory_type_id` = ft.`factory_type_id`
+    WHERE aap.admin_id = #{adminId} AND aap.`popedom_grade` = 4
+    ORDER BY station_id
+  </select>
+</mapper>

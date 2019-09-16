@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclematerial.mapper.BrigadeMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.Brigade" >
+    <id column="brigade_id" property="brigadeId" jdbcType="BIGINT" />
+    <result column="brigade" property="brigade" jdbcType="VARCHAR" />
+    <result column="brigade_person" property="brigadePerson" jdbcType="VARCHAR" />
+    <result column="brigade_person_telphone" property="brigadePersonTelphone" jdbcType="BIGINT" />
+    <result column="brigade_person_phone" property="brigadePersonPhone" jdbcType="VARCHAR" />
+    <result column="factory_id" property="factoryId" jdbcType="BIGINT" />
+    <result column="station_id" property="stationId" jdbcType="BIGINT" />
+    <result column="task_area_id" property="taskAreaId" jdbcType="BIGINT" />
+    <result column="table_year" property="tableYear" jdbcType="DATE" />
+    <result column="table_name" property="tableName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="ExcelResultMap" type="com.cj.exclematerial.pojo.BrigadeBo" >
+    <id column="brigade_id" property="brigadeId" jdbcType="BIGINT" />
+    <result column="brigade" property="brigade" jdbcType="VARCHAR" />
+    <result column="brigade_person" property="brigadePerson" jdbcType="VARCHAR" />
+    <result column="brigade_person_telphone" property="brigadePersonTelphone" jdbcType="BIGINT" />
+    <result column="brigade_person_phone" property="brigadePersonPhone" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    brigade_id, brigade, brigade_person, brigade_person_telphone, brigade_person_phone, 
+    factory_id, station_id, task_area_id, table_year, table_name
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from brigade
+    where brigade_id = #{brigadeId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from brigade
+    where brigade_id = #{brigadeId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.Brigade" >
+    insert into brigade (brigade_id, brigade, brigade_person, 
+      brigade_person_telphone, brigade_person_phone, 
+      factory_id, station_id, task_area_id, 
+      table_year, table_name)
+    values (#{brigadeId,jdbcType=BIGINT}, #{brigade,jdbcType=VARCHAR}, #{brigadePerson,jdbcType=VARCHAR}, 
+      #{brigadePersonTelphone,jdbcType=BIGINT}, #{brigadePersonPhone,jdbcType=VARCHAR},
+      #{factoryId,jdbcType=BIGINT}, #{stationId,jdbcType=BIGINT}, #{taskAreaId,jdbcType=BIGINT}, 
+      #{tableYear,jdbcType=DATE}, #{tableName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.Brigade" >
+    insert into brigade
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="brigadeId != null" >
+        brigade_id,
+      </if>
+      <if test="brigade != null" >
+        brigade,
+      </if>
+      <if test="brigadePerson != null" >
+        brigade_person,
+      </if>
+      <if test="brigadePersonTelphone != null" >
+        brigade_person_telphone,
+      </if>
+      <if test="brigadePersonPhone != null" >
+        brigade_person_phone,
+      </if>
+      <if test="factoryId != null" >
+        factory_id,
+      </if>
+      <if test="stationId != null" >
+        station_id,
+      </if>
+      <if test="taskAreaId != null" >
+        task_area_id,
+      </if>
+      <if test="tableYear != null" >
+        table_year,
+      </if>
+      <if test="tableName != null" >
+        table_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="brigadeId != null" >
+        #{brigadeId,jdbcType=BIGINT},
+      </if>
+      <if test="brigade != null" >
+        #{brigade,jdbcType=VARCHAR},
+      </if>
+      <if test="brigadePerson != null" >
+        #{brigadePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="brigadePersonTelphone != null" >
+        #{brigadePersonTelphone,jdbcType=BIGINT},
+      </if>
+      <if test="brigadePersonPhone != null" >
+        #{brigadePersonPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryId != null" >
+        #{factoryId,jdbcType=BIGINT},
+      </if>
+      <if test="stationId != null" >
+        #{stationId,jdbcType=BIGINT},
+      </if>
+      <if test="taskAreaId != null" >
+        #{taskAreaId,jdbcType=BIGINT},
+      </if>
+      <if test="tableYear != null" >
+        #{tableYear,jdbcType=DATE},
+      </if>
+      <if test="tableName != null" >
+        #{tableName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.Brigade" >
+    update brigade
+    <set >
+      <if test="brigade != null" >
+        brigade = #{brigade,jdbcType=VARCHAR},
+      </if>
+      <if test="brigadePerson != null" >
+        brigade_person = #{brigadePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="brigadePersonTelphone != null" >
+        brigade_person_telphone = #{brigadePersonTelphone,jdbcType=BIGINT},
+      </if>
+      <if test="brigadePersonPhone != null" >
+        brigade_person_phone = #{brigadePersonPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryId != null" >
+        factory_id = #{factoryId,jdbcType=BIGINT},
+      </if>
+      <if test="stationId != null" >
+        station_id = #{stationId,jdbcType=BIGINT},
+      </if>
+      <if test="taskAreaId != null" >
+        task_area_id = #{taskAreaId,jdbcType=BIGINT},
+      </if>
+      <if test="tableYear != null" >
+        table_year = #{tableYear,jdbcType=DATE},
+      </if>
+      <if test="tableName != null" >
+        table_name = #{tableName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where brigade_id = #{brigadeId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.Brigade" >
+    update brigade
+    set brigade = #{brigade,jdbcType=VARCHAR},
+      brigade_person = #{brigadePerson,jdbcType=VARCHAR},
+      brigade_person_telphone = #{brigadePersonTelphone,jdbcType=BIGINT},
+      brigade_person_phone = #{brigadePersonPhone,jdbcType=VARCHAR},
+      factory_id = #{factoryId,jdbcType=BIGINT},
+      station_id = #{stationId,jdbcType=BIGINT},
+      task_area_id = #{taskAreaId,jdbcType=BIGINT},
+      table_year = #{tableYear,jdbcType=DATE},
+      table_name = #{tableName,jdbcType=VARCHAR}
+    where brigade_id = #{brigadeId,jdbcType=BIGINT}
+  </update>
+  <!--根据Query查询消防队-->
+  <select id="findByQuery" resultType="java.util.Map" parameterType="java.util.Map" >
+    select
+    brigade_id brigadeId , brigade, brigade_person brigadePerson, brigade_person_telphone brigadePersonTelphone, brigade_person_phone brigadePersonPhone,
+    factory_basic_msg.factory_name factoryName, DATE_FORMAT(table_year,'%Y-%m-%d') datetime, table_name tableName
+    from brigade
+    Left JOIN
+    factory_basic_msg ON factory_basic_msg.factory_id=brigade.factory_id
+    WHERE 1=1
+    <if test="datetime!=null">
+      AND YEAR(table_year)=#{datetime}
+    </if>
+    <if test="factoryId!=null">
+      AND factory_basic_msg.factory_id=#{factoryId}
+    </if>
+    <if test="taskAreaId!=null">
+      AND taskarea_id=#{taskAreaId}
+    </if>
+    <if test="stationId!=null">
+      AND station_id=#{stationId}
+    </if>
+
+  </select>
+  <!--根据查询条件查询消防队-->
+  <select id="selectExcelBrigade" resultMap="ExcelResultMap" parameterType="java.util.Map" >
+    select
+    <include refid="Base_Column_List" />
+    from brigade WHERE 1=1
+    <if test="datetime!=null">
+      AND YEAR(table_year)=#{datetime}
+    </if>
+    <if test="factoryId!=null">
+      AND factory_id=#{factoryId}
+    </if>
+    <if test="taskAreaId!=null">
+      AND taskarea_id=#{taskAreaId}
+    </if>
+    <if test="stationId!=null">
+      AND station_id=#{stationId}
+    </if>
+
+  </select>
+</mapper>

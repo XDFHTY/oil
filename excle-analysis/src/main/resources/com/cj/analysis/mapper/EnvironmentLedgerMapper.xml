@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.analysis.mapper.EnvironmentLedgerMapper" >
+
+  <!--映射-->
+  <resultMap id="findRiskGradeMap" type="com.cj.common.entity.EnvironmentGrade">
+    <result column="environmental_grade_id" property="environmentalGradeId" />
+    <result column="target" property="target" />
+    <result column="result" property="result" />
+    <result column="result_describe" property="resultDescribe" />
+    <result column="station_id" property="stationId" />
+    <result column="gradetime" property="gradetime" />
+  </resultMap>
+  <!--根据需查询的结果类型 场站id 年份 查询-->
+  <select id="findRiskGrade" resultMap="findRiskGradeMap">
+    SELECT eg.environmental_grade_id,eg.target,eg.result,eg.result_describe,eg.station_id,eg.gradetime
+    FROM `environment_target` et
+      LEFT JOIN `environment_grade` eg ON et.environment_target_id = eg.target
+    WHERE et.targent = #{targent}
+          AND eg.station_id = #{stationId}
+          AND YEAR(eg.gradetime) = #{year}
+  </select>
+
+  <!--根据场站id 查询作业区名称 场站名称 气矿名称-->
+  <select id="findStationName" parameterType="java.lang.Integer" resultType="java.util.Map">
+    SELECT s.`station_name`,ta.`task_area_name`,fbm.`factory_name`
+    FROM station s
+      LEFT JOIN task_area ta ON s.`task_area_id` = ta.`task_area_id`
+      LEFT JOIN factory_basic_msg fbm ON ta.`factory_id` = fbm.`factory_id`
+    WHERE s.station_id = #{stationId}
+  </select>
+
+
+  <!--根据场站id  查询工艺分类名称-->
+  <select id="findFactoryTypeNameById" parameterType="java.lang.Integer" resultType="java.lang.String">
+    SELECT ft.`factory_type_name`
+    FROM station s
+      LEFT JOIN factory_type ft ON s.`factory_type_id` = ft.`factory_type_id`
+    WHERE s.`station_id` = #{stationId}
+  </select>
+
+
+  <!--根据场站id和年份查询本年度 环境风险防控措施表-->
+  <select id="findMeasuresByIdAndYear"  resultType="java.util.Map">
+    select *
+    from measures
+    where station_id = #{stationId}
+          and year(`year`) = #{year}
+          and state = '1'
+  </select>
+
+</mapper>

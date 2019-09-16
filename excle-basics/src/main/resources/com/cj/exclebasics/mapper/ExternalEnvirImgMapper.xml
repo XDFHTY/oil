@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclebasics.mapper.ExternalEnvirImgMapper" >
+    <resultMap id="BaseResultMap" type="com.cj.common.entity.ExternalEnvirImg" >
+        <id column="external_envir_img_id" property="externalEnvirImgId" jdbcType="BIGINT" />
+        <result column="table_record_id" property="tableRecordId" jdbcType="BIGINT" />
+        <result column="img_url" property="imgUrl" jdbcType="VARCHAR" />
+        <result column="state" property="state" jdbcType="CHAR" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+    external_envir_img_id, table_record_id, img_url, state
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select
+        <include refid="Base_Column_List" />
+        from external_envir_img
+        where external_envir_img_id = #{externalEnvirImgId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from external_envir_img
+    where external_envir_img_id = #{externalEnvirImgId,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.cj.common.entity.ExternalEnvirImg" >
+    insert into external_envir_img (external_envir_img_id, table_record_id, 
+      img_url, state)
+    values (#{externalEnvirImgId,jdbcType=BIGINT}, #{tableRecordId,jdbcType=BIGINT}, 
+      #{imgUrl,jdbcType=VARCHAR}, #{state,jdbcType=CHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.cj.common.entity.ExternalEnvirImg" >
+        insert into external_envir_img
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="externalEnvirImgId != null" >
+                external_envir_img_id,
+            </if>
+            <if test="tableRecordId != null" >
+                table_record_id,
+            </if>
+            <if test="imgUrl != null" >
+                img_url,
+            </if>
+            <if test="state != null" >
+                state,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="externalEnvirImgId != null" >
+                #{externalEnvirImgId,jdbcType=BIGINT},
+            </if>
+            <if test="tableRecordId != null" >
+                #{tableRecordId,jdbcType=BIGINT},
+            </if>
+            <if test="imgUrl != null" >
+                #{imgUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="state != null" >
+                #{state,jdbcType=CHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.ExternalEnvirImg" >
+        update external_envir_img
+        <set >
+            <if test="tableRecordId != null" >
+                table_record_id = #{tableRecordId,jdbcType=BIGINT},
+            </if>
+            <if test="imgUrl != null" >
+                img_url = #{imgUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="state != null" >
+                state = #{state,jdbcType=CHAR},
+            </if>
+        </set>
+        where external_envir_img_id = #{externalEnvirImgId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.ExternalEnvirImg" >
+    update external_envir_img
+    set table_record_id = #{tableRecordId,jdbcType=BIGINT},
+      img_url = #{imgUrl,jdbcType=VARCHAR},
+      state = #{state,jdbcType=CHAR}
+    where external_envir_img_id = #{externalEnvirImgId,jdbcType=BIGINT}
+  </update>
+
+
+    <!--查询外环关系图信息-->
+    <select id="findNexusImg" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT
+    external_envir_img_id, eei.table_record_id, img_url, state
+    FROM
+    table_record tr
+    LEFT JOIN external_envir_img eei ON tr.table_record_id = eei.table_record_id
+    LEFT JOIN excle_table et ON et.excle_table_id = tr.excle_table_id
+    WHERE
+    tr.station_id = #{stationId}
+    AND
+    tr.`year`= #{year}
+    AND
+    et.excle_table_name = #{tableName}
+    AND
+    eei.state = '1'
+  </select>
+
+    <!--批量新增数据-->
+    <insert id="addNexusImg" parameterType="java.util.List" >
+        insert into
+        external_envir_img ( table_record_id, img_url)
+        <foreach collection="list" item="item" index="index" separator="," open="values">
+            (
+            #{item.tableRecordId,jdbcType=BIGINT},
+            #{item.imgUrl,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <!--批量修改数据-->
+    <update id="updateNexusImg" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" separator=";">
+            update external_envir_img
+            <set >
+                <!--<if test="item.tableRecordId != null" >-->
+                    <!--table_record_id = #{item.tableRecordId,jdbcType=BIGINT},-->
+                <!--</if>-->
+                <!--<if test="item.imgUrl != null" >-->
+                    <!--img_url = #{item.imgUrl,jdbcType=VARCHAR},-->
+                <!--</if>-->
+                <if test="item.state != null" >
+                    state = #{item.state,jdbcType=CHAR},
+                </if>
+            </set>
+            where external_envir_img_id = #{item.externalEnvirImgId,jdbcType=BIGINT}
+        </foreach>
+    </update>
+
+</mapper>

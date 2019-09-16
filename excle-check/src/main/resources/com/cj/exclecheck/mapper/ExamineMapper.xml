@@ -1,0 +1,757 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclecheck.mapper.ExamineMapper">
+
+    <!--根据场站id 查询工艺分类名称-->
+    <select id="findFactoryTypeName" parameterType="java.lang.Integer" resultType="java.lang.String">
+    select ft.`factory_type_name`
+    from station s
+      left join factory_type ft on s.`factory_type_id`= ft.`factory_type_id`
+    where s.`station_id` = #{stationId}
+    limit 1
+  </select>
+
+
+    <!--映射-->
+    <resultMap id="TableRecordMap" type="com.cj.common.entity.TableRecord">
+        <result column="check_type" property="checkType" jdbcType="CHAR"/>
+    </resultMap>
+    <!--根据场站id和年份 查询一条表记录-->
+    <select id="findTableRecord" resultMap="TableRecordMap">
+        SELECT *
+        FROM
+        (
+        SELECT
+        tr.`check_type`,et.`excle_table_name`
+        FROM table_record tr
+        LEFT JOIN excle_table et ON tr.`excle_table_id` = et.`excle_table_id`
+        WHERE
+        tr.year = #{year}
+        AND
+        tr.station_id = #{stationId}
+        ) AS a
+        WHERE a.excle_table_name LIKE ('基本信息')
+    </select>
+
+    <!--根据场站id和年份查询已经填过的表-->
+    <select id="findTableNameList" resultType="java.lang.String">
+        SELECT et.`excle_table_name`
+        FROM table_record tr
+        LEFT JOIN excle_table et ON tr.`excle_table_id` = et.`excle_table_id`
+        WHERE
+        tr.year = #{year}
+        AND
+        tr.station_id = #{stationId}
+        AND
+        tr.table_type = '1'
+    </select>
+
+    <!--根据年份和场站id  修改审核状态 为 2-->
+    <update id="updateTableRecordCheckType">
+    UPDATE table_record
+    SET check_type = '2'
+    WHERE station_id = #{stationId}
+          AND `year` = #{year}
+          AND check_type = '1' OR check_type = '21'
+    and table_type not in ('2','3')
+  </update>
+
+    <!--根据年份和场站id  修改审核状态 为 4-->
+    <update id="updateTableRecordCheckTypeSex">
+    UPDATE table_record
+    SET check_type = '4'
+    WHERE station_id = #{stationId}
+    AND `year` = #{year}
+    AND check_type = '3'
+  </update>
+
+    <!--风险防控上年度表 修改审核状态 为 4-->
+    <update id="updateLasetYearTable">
+    UPDATE table_record
+    SET check_type = '4'
+    WHERE station_id = #{stationId}
+          AND `year` = #{year}
+          AND table_type = '3'
+          AND check_type in ('3')
+  </update>
+
+    <!--映射-->
+    <resultMap id="findStationListMap" type="com.cj.common.entity.Station">
+        <id column="station_id" property="stationId" jdbcType="BIGINT"/>
+        <result column="task_area_id" property="taskAreaId" jdbcType="BIGINT"/>
+        <result column="station_core_id" property="stationCoreId" jdbcType="BIGINT"/>
+        <result column="factory_type_id" property="factoryTypeId" jdbcType="BIGINT"/>
+        <result column="station_name" property="stationName" jdbcType="VARCHAR"/>
+        <result column="production_time" property="productionTime" jdbcType="TIMESTAMP"/>
+        <result column="popedom_grade" property="popedomGrade" jdbcType="CHAR"/>
+    </resultMap>
+    <!--查询所管辖的作业区下所有的场站id和场站名称-->
+    <select id="findStationList" parameterType="java.lang.Long" resultMap="findStationListMap">
+    SELECT s.*
+    FROM auth_admin_popedom aap
+      LEFT JOIN task_area ta ON aap.`popedom_id` = ta.`task_area_id`
+      LEFT JOIN station s ON ta.`task_area_id` = s.`task_area_id`
+    WHERE aap.admin_id = #{adminId}
+          AND aap.popedom_grade = '3'
+  </select>
+
+    <!--根据场站id和年份查询已经填过的表 不筛选type-->
+    <select id="findTableNameListNotType" resultType="java.lang.String">
+        SELECT et.`excle_table_name`
+        FROM table_record tr
+        LEFT JOIN excle_table et ON tr.`excle_table_id` = et.`excle_table_id`
+        WHERE
+        tr.table_type = '1'
+        AND
+        tr.year = #{year}
+        AND tr.station_id = #{stationId}
+
+    </select>
+
+
+    <!--根据年份和场站id  修改审核状态-->
+    <update id="updateTableRecordCheckByNum">
+    UPDATE table_record
+    SET check_type = #{num}
+    WHERE station_id = #{stationId}
+          AND `year` = #{year}
+  </update>
+
+
+    <!--映射-->
+    <resultMap id="findTaskAreaAndStationMap" type="com.cj.exclecheck.entity.TaskAreaAndStation">
+        <result column="task_area_id" property="taskAreaId"/>
+        <result column="task_area_name" property="taskAreaName"/>
+        <collection property="stationList" javaType="java.util.List" ofType="com.cj.common.entity.Station">
+            <result column="station_id" property="stationId"/>
+            <result column="station_name" property="stationName"/>
+        </collection>
+    </resultMap>
+    <!--查询所管辖下所有的作业区id和名称 及 下属场站id和场站名称-->
+    <select id="findTaskAreaAndStation" parameterType="java.lang.Long" resultMap="findTaskAreaAndStationMap">
+    SELECT ta.`task_area_id`,ta.`task_area_name`,s.`station_id`,s.`station_name`
+    FROM auth_admin_popedom aap
+      LEFT JOIN factory_basic_msg fbm ON aap.`popedom_id` = fbm.`factory_id`
+      LEFT JOIN task_area ta ON fbm.`factory_id` = ta.`factory_id`
+      LEFT JOIN station s ON ta.`task_area_id` = s.`task_area_id`
+    WHERE aap.`admin_id` = #{adminId}
+          AND aap.`popedom_grade` = '2'
+  </select>
+
+    <!--模糊查询 是否提交台账或C值-->
+    <select id="findTableName" resultType="java.lang.String">
+    SELECT *
+    FROM
+      (
+        SELECT et.`excle_table_name`
+        FROM table_record tr
+          LEFT JOIN excle_table et ON tr.`excle_table_id` = et.`excle_table_id`
+        WHERE tr.year = #{year}
+              AND tr.station_id = #{stationId}
+      ) AS a
+    WHERE a.excle_table_name LIKE (#{name})
+  </select>
+
+    <!--环境风险是否填写 今年和上年-->
+    <select id="findEnvironmental" resultType="java.lang.Integer">
+    SELECT COUNT(*)
+    FROM table_record tr
+    WHERE tr.year = #{year}
+          AND tr.station_id = #{stationId}
+          AND tr.table_type = #{type}
+  </select>
+
+
+    <!--修改审核状态-->
+    <update id="updateExamineCheckType">
+    UPDATE table_record
+    SET check_type = #{s3}
+    WHERE station_id = #{stationId}
+          AND `year` = #{year}
+          AND check_type in (#{s1},#{s2})
+  </update>
+
+
+    <!--映射-->
+    <resultMap id="findStationListByAreaIdMap" type="com.cj.common.entity.Station">
+        <id column="station_id" property="stationId" jdbcType="BIGINT"/>
+        <result column="task_area_id" property="taskAreaId" jdbcType="BIGINT"/>
+        <result column="station_core_id" property="stationCoreId" jdbcType="BIGINT"/>
+        <result column="factory_type_id" property="factoryTypeId" jdbcType="BIGINT"/>
+        <result column="station_name" property="stationName" jdbcType="VARCHAR"/>
+        <result column="production_time" property="productionTime" jdbcType="TIMESTAMP"/>
+        <result column="popedom_grade" property="popedomGrade" jdbcType="CHAR"/>
+    </resultMap>
+    <!--查询作业区下所有场站-->
+    <select id="findStationListByAreaId" parameterType="java.lang.Integer" resultMap="findStationListByAreaIdMap">
+    SELECT *
+    FROM station
+    WHERE task_area_id = #{taskAreaId}
+  </select>
+
+
+    <!--风险防控上年度表 修改审核状态 为 8-->
+    <update id="updateExamineLasetYearTable">
+    UPDATE table_record
+    SET check_type = #{s3}
+    WHERE station_id = #{stationId}
+          AND `year` = #{lastYear}
+          AND table_type = '3'
+          AND check_type in (#{s1},#{s2})
+  </update>
+
+
+    <!--这个场站下  场站级填的表 修改状态 从 2或者5变成3-->
+    <update id="updateCheckTypeByStation">
+    UPDATE
+        table_record tr
+        LEFT JOIN auth_customer_role acr ON tr.`founder_id` = acr.`customer_id`
+        LEFT JOIN auth_role ar ON acr.`role_id` = ar.`role_id`
+    SET tr.check_type = #{s3}
+    WHERE
+      tr.`station_id` = #{stationId}
+      AND tr.`year` = #{year}
+      AND tr.`check_type` IN (#{s1},#{s2})
+      AND ar.`role_description_name` = '场站级'
+
+  </update>
+
+    <!--把上年度表  2,22 - 3 -->
+    <update id="updateLasetYearTableByS">
+        UPDATE `table_record` SET check_type = #{s3}
+        WHERE station_id =#{stationId}
+              AND `year` = #{year}
+              AND table_type = '3'
+              AND check_type in (#{s1},#{s2})
+    </update>
+
+
+    <!--根据年份和场站id  修改审核状态 为 6-->
+    <update id="updateTableRecordCheckTypeSexB">
+        UPDATE table_record
+        SET check_type = '6'
+        WHERE station_id = #{stationId}
+              AND `year` = #{year}
+              AND check_type = '5'
+    </update>
+
+    <!--风险防控上年度表 修改审核状态 为 6-->
+    <update id="updateLasetYearTableB">
+        UPDATE table_record
+        SET check_type = '6'
+        WHERE station_id = #{stationId}
+              AND `year` = #{year}
+              AND table_type = '3'
+              AND check_type in ('5')
+    </update>
+
+    <!--修改审核状态-->
+    <update id="updateTableRecordCheckTypeSexQA">
+        UPDATE table_record
+        SET check_type = #{s3}
+        WHERE station_id = #{stationId}
+              AND `year` = #{year}
+              AND (check_type = #{s1} OR #{s2})
+    </update>
+
+    <!--风险防控上年度表 修改审核状态-->
+    <update id="updateLasetYearTableQA">
+        UPDATE table_record
+        SET check_type = #{s3}
+        WHERE station_id = #{stationId}
+              AND `year` = #{year}
+              AND table_type = '3'
+              AND check_type in (#{s1},#{s2})
+    </update>
+
+
+    <!--根据场站id 查询作业区id 和 气矿id-->
+    <select id="findTaskAreaAndFactoryId" parameterType="java.lang.Integer" resultType="java.util.Map">
+    select s.`station_id`,ta.`task_area_id`,fbm.`factory_id`
+    from station s
+      left join task_area ta on s.`task_area_id` = ta.`task_area_id`
+      left join factory_basic_msg fbm on ta.`factory_id` = fbm.`factory_id`
+    where s.`station_id` = #{stationId}
+  </select>
+
+    <!--根据作业区id 查询 气矿id-->
+    <select id="findFactoryId" parameterType="java.lang.Integer" resultType="java.util.Map">
+    SELECT ta.`task_area_id`,fbm.`factory_id`
+    FROM task_area ta
+      LEFT JOIN factory_basic_msg fbm ON ta.`factory_id` = fbm.`factory_id`
+    WHERE ta.`task_area_id` = #{taskAreaId}
+  </select>
+
+
+    <!--根据adminId查询管理的作业区id-->
+    <select id="findTaskAreaIdByAdminId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+    SELECT popedom_id
+    FROM auth_admin_popedom
+    WHERE admin_id = #{adminId}
+          AND popedom_grade = 3
+    LIMIT 1
+  </select>
+
+
+    <!--查询该账号所管理的场站id-->
+    <select id="findStationIdList" parameterType="java.lang.Long" resultType="java.lang.Long">
+    SELECT popedom_id
+    FROM auth_admin_popedom
+    WHERE admin_id = #{adminId}
+          AND popedom_grade = '4'
+    ORDER BY popedom_id
+  </select>
+
+    <!--映射-->
+    <resultMap id="findExamineResultByIdMap" type="com.cj.exclecheck.entity.RespExamineResult">
+        <result column="factory_id" property="factoryId"/>
+        <result column="factory_name" property="factoryName"/>
+        <result column="task_area_id" property="taskAreaId"/>
+        <result column="task_area_name" property="taskAreaName"/>
+        <result column="station_id" property="stationId"/>
+        <result column="station_name" property="stationName"/>
+        <result column="full_name" property="fullName"/>
+        <result column="check_opinion" property="checkOpinion"/>
+        <result column="check_msg" property="checkMsg"/>
+        <result column="operator_time" property="operatorTime"/>
+        <result column="factory_type_name" property="factoryTypeName"/>
+    </resultMap>
+    <!--根据场站id 查询 审批结果-->
+    <select id="findExamineResultById" resultMap="findExamineResultByIdMap">
+        SELECT lc.* ,s.`station_name`,ta.`task_area_id`,ta.`task_area_name`,fbm.`factory_id`,fbm.`factory_name`,ft.factory_type_name
+        FROM log_check lc
+            LEFT JOIN station s ON lc.`station_id` = s.`station_id`
+            LEFT JOIN task_area ta ON s.`task_area_id` = ta.`task_area_id`
+            LEFT JOIN factory_basic_msg fbm ON ta.`factory_id` = fbm.`factory_id`
+            left join factory_type ft on ft.factory_type_id = s.factory_type_id
+        WHERE lc.station_id = #{stationId}
+          AND YEAR(lc.year) = #{year}
+              AND lc.`role_grade_name` = '场站级'
+    ORDER BY lc.operator_time DESC
+    LIMIT 1
+  </select>
+
+    <!--查询提交时间-->
+    <select id="findSubmitDate" resultType="java.util.Date">
+    SELECT operator_time
+    FROM log_check
+    WHERE station_id = #{stationId}
+          AND YEAR(`year`) = #{year}
+          AND check_msg = '已提交'
+          AND role_grade_name = '场站级'
+    ORDER BY operator_time DESC
+    LIMIT 1
+  </select>
+
+
+    <!--查询该账号所管理的作业区id  只有一个-->
+    <select id="findTaskAreaId" parameterType="java.lang.Long" resultType="java.lang.Long">
+    SELECT popedom_id
+    FROM auth_admin_popedom
+    WHERE admin_id = #{adminId}
+          AND popedom_grade = '3'
+    LIMIT 1
+  </select>
+
+
+    <!--映射-->
+    <resultMap id="findExamineResultByTaskAreaIdMap" type="com.cj.exclecheck.entity.RespExamineResult">
+        <result column="factory_id" property="factoryId"/>
+        <result column="factory_name" property="factoryName"/>
+        <result column="task_area_id" property="taskAreaId"/>
+        <result column="task_area_name" property="taskAreaName"/>
+        <result column="full_name" property="fullName"/>
+        <result column="check_opinion" property="checkOpinion"/>
+        <result column="check_msg" property="checkMsg"/>
+        <result column="operator_time" property="operatorTime"/>
+    </resultMap>
+    <!--根据作业区id  查询审批结果-->
+    <select id="findExamineResultByTaskAreaId" resultMap="findExamineResultByTaskAreaIdMap">
+        SELECT lc.*,ta.task_area_id,ta.`task_area_name`,fbm.`factory_id`,fbm.`factory_name`
+        FROM log_check lc
+            left join task_area ta
+                on lc.`task_area_id` = ta.`task_area_id`
+            LEFT JOIN factory_basic_msg fbm ON ta.`factory_id` = fbm.`factory_id`
+        WHERE lc.task_area_id = #{taskAreaId}
+              AND lc.station_id IS NULL
+              AND YEAR(lc.`year`) = #{year}
+              AND lc.`role_grade_name` = #{s1}
+        ORDER BY lc.operator_time DESC
+        LIMIT 1
+  </select>
+
+
+    <!--映射-->
+    <resultMap id="findExamineResultByFactoryIdMap" type="com.cj.exclecheck.entity.RespExamineResult">
+        <result column="factory_id" property="factoryId"/>
+        <result column="factory_name" property="factoryName"/>
+        <result column="full_name" property="fullName"/>
+        <result column="check_opinion" property="checkOpinion"/>
+        <result column="check_msg" property="checkMsg"/>
+        <result column="operator_time" property="operatorTime"/>
+    </resultMap>
+    <select id="findExamineResultByFactoryId" resultMap="findExamineResultByFactoryIdMap">
+        SELECT
+            lc.*,
+            fbm.`factory_id`,
+            fbm.`factory_name`
+        FROM
+            log_check lc
+            LEFT JOIN factory_basic_msg fbm
+                ON lc.`factory_id` = fbm.`factory_id`
+        WHERE lc.factory_id = #{factoryId}
+              AND lc.station_id IS NULL
+              AND YEAR(lc.`year`) = #{year}
+              AND lc.`role_grade_name` = #{s1}
+        ORDER BY lc.operator_time DESC
+        LIMIT 1
+    </select>
+
+
+
+    <!--查询提交时间-->
+    <select id="findSubmitDateByArea" resultType="java.util.Date">
+    SELECT operator_time
+    FROM log_check
+    WHERE task_area_id = #{taskAreaId}
+          AND check_msg = '已提交'
+          AND station_id IS NULL
+          AND YEAR(`year`) = #{year}
+          and role_grade_name = #{s1}
+    ORDER BY operator_time DESC
+    LIMIT 1
+  </select>
+
+    <select id="findSubmitDateByFactory" resultType="java.util.Date">
+        SELECT operator_time
+        FROM log_check
+        WHERE factory_id = #{factoryId}
+              AND check_msg = '已提交'
+              AND station_id IS NULL
+              AND YEAR(`year`) = #{year}
+              and role_grade_name = #{s1}
+        ORDER BY operator_time DESC
+        LIMIT 1
+    </select>
+
+    <!--根据场站id 查询这个场站有没有 已提交待审核的表(状态为2)-->
+    <select id="findTableByStationId" resultType="java.lang.Integer">
+    SELECT COUNT(*)
+    FROM table_record
+    WHERE station_id = #{stationId}
+          AND `year` = #{year}
+          AND check_type = #{type}
+  </select>
+
+
+    <!--映射-->
+    <resultMap id="findTableInfoMap" type="com.cj.exclecheck.entity.RespTableInfo">
+        <result column="excle_table_id" property="excleTableId"/>
+        <result column="excle_table_name" property="excleTableName"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="table_type" property="type"/>
+        <result column="factory_name" property="factoryName"/>
+        <result column="task_area_name" property="taskAreaName"/>
+        <result column="station_name" property="stationName"/>
+        <result column="factory_type_name" property="factoryTypeName"/>
+        <result column="year" property="year"/>
+    </resultMap>
+
+    <!--作业区级和气矿级  可以看这个场站下所有的表  包括 作业区填写的表-->
+    <select id="findTableInfoByArea" resultMap="findTableInfoMap">
+    SELECT
+      fbm.`factory_name`,
+      ta.`task_area_name`,
+      s.`station_name`,
+      ft.`factory_type_name`,
+      tr.`table_type`,
+      tr.`year` AS `year` ,
+      tr.excle_table_id,
+      tr.create_time,
+      tr.update_time,
+      et.excle_table_name
+    FROM
+      table_record tr
+      LEFT JOIN excle_table et
+        ON tr.excle_table_id = et.excle_table_id
+      LEFT JOIN station s
+        ON tr.`station_id` = s.`station_id`
+      LEFT JOIN task_area ta
+        ON s.`task_area_id` = ta.`task_area_id`
+      LEFT JOIN factory_basic_msg fbm
+        ON ta.`factory_id` = fbm.`factory_id`
+      LEFT JOIN factory_type ft
+        ON ft.`factory_type_id` = s.`factory_type_id`
+    WHERE tr.`station_id` = #{stationId}
+          AND tr.year = #{year}
+  </select>
+
+
+    <!--场站级  只能看 由场站填写 表-->
+    <select id="findTableInfoByStation" resultMap="findTableInfoMap">
+    SELECT
+      fbm.`factory_name`,
+      ta.`task_area_name`,
+      s.`station_name`,
+      ft.`factory_type_name`,
+      a.`year` AS `year` ,
+      a.table_type,
+      a.excle_table_id,
+      a.create_time,
+      a.update_time,
+      a.excle_table_name
+    FROM
+      (SELECT
+         tr.`station_id`,
+         tr.`table_type`,
+         tr.excle_table_id,
+         tr.create_time,
+         tr.update_time,
+         et.excle_table_name,
+         tr.`founder_id`,
+         ar.`role_description_name`,
+         tr.`year`
+       FROM
+         table_record tr
+         LEFT JOIN excle_table et
+           ON tr.excle_table_id = et.excle_table_id
+         LEFT JOIN auth_customer_role acr
+           ON tr.`founder_id` = acr.`customer_id`
+         LEFT JOIN auth_role ar
+           ON acr.`role_id` = ar.`role_id`
+       WHERE tr.`station_id` = #{stationId}
+             AND tr.year = #{year}
+      ) AS a
+      LEFT JOIN station s
+        ON a.`station_id` = s.`station_id`
+      LEFT JOIN task_area ta
+        ON s.`task_area_id` = ta.`task_area_id`
+      LEFT JOIN factory_basic_msg fbm
+        ON ta.`factory_id` = fbm.`factory_id`
+      LEFT JOIN factory_type ft
+        ON ft.`factory_type_id` = s.`factory_type_id`
+    WHERE a.role_description_name = '场站级'
+  </select>
+
+    <!--查询上年度表-->
+    <select id="findLastYearTable" resultMap="findTableInfoMap">
+    SELECT
+      fbm.`factory_name`,
+      ta.`task_area_name`,
+      s.`station_name`,
+      ft.`factory_type_name`,
+      tr.`table_type`,
+      tr.`year` AS `year` ,
+      tr.excle_table_id,
+      tr.create_time,
+      tr.update_time,
+      et.excle_table_name
+    FROM
+      table_record tr
+      LEFT JOIN excle_table et
+        ON tr.excle_table_id = et.excle_table_id
+      LEFT JOIN station s
+        ON tr.`station_id` = s.`station_id`
+      LEFT JOIN task_area ta
+        ON s.`task_area_id` = ta.`task_area_id`
+      LEFT JOIN factory_basic_msg fbm
+        ON ta.`factory_id` = fbm.`factory_id`
+      LEFT JOIN factory_type ft
+        ON ft.`factory_type_id` = s.`factory_type_id`
+    WHERE tr.`station_id` = #{stationId}
+          AND tr.year = #{year}
+          AND tr.`table_type` = '3'
+  </select>
+
+    <!--查询场站其余信息-->
+    <select id="findStationById" resultType="java.util.Map">
+    SELECT fbm.`factory_name`,ta.`task_area_name`,s.`station_name`,ft.`factory_type_name`
+    FROM station s
+      LEFT JOIN task_area ta ON s.`task_area_id` = ta.`task_area_id`
+      LEFT JOIN factory_basic_msg fbm ON ta.`factory_id` = fbm.`factory_id`
+      LEFT JOIN factory_type ft ON ft.`factory_type_id` = s.`factory_type_id`
+    WHERE s.`station_id` = #{stationId}
+  </select>
+
+    <!--根据场站id 查询这个场站有没有 7-厂矿已审核未通过被驳回-->
+    <select id="findTableByStationIdByS" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM table_record tr
+            LEFT JOIN auth_customer_role acr ON tr.`founder_id` = acr.`customer_id`
+            LEFT JOIN auth_role ar ON acr.`role_id` = ar.`role_id`
+        WHERE tr.`check_type` = #{type}
+              AND ar.`role_description_name` = '场站级'
+              AND tr.`station_id` = #{stationId}
+              AND tr.`year` = #{year}
+    </select>
+
+
+    <resultMap id="findLogByZAMap" type="com.cj.exclecheck.entity.RespExamineResult" >
+        <result column="factory_id" property="factoryId"/>
+        <result column="factory_name" property="factoryName"/>
+        <result column="task_area_id" property="taskAreaId"/>
+        <result column="task_area_name" property="taskAreaName"/>
+        <result column="station_id" property="stationId"/>
+        <result column="station_name" property="stationName"/>
+        <result column="full_name" property="fullName"/>
+        <result column="check_opinion" property="checkOpinion"/>
+        <result column="check_msg" property="checkMsg"/>
+        <result column="operator_time" property="operatorTime"/>
+        <result column="factory_type_name" property="factoryTypeName"/>
+    </resultMap>
+    <!--查询带有场站id 且 是 作业区级A的审核日志-->
+    <select id="findLogByCA" resultMap="findLogByZAMap">
+        SELECT lc.* ,s.`station_name`,ta.`task_area_id`,ta.`task_area_name`,fbm.`factory_id`,fbm.`factory_name`,ft.factory_type_name
+        FROM log_check lc
+            LEFT JOIN station s ON lc.`station_id` = s.`station_id`
+            LEFT JOIN task_area ta ON s.`task_area_id` = ta.`task_area_id`
+            LEFT JOIN factory_basic_msg fbm ON ta.`factory_id` = fbm.`factory_id`
+            LEFT JOIN factory_type ft ON ft.factory_type_id = s.factory_type_id
+        WHERE lc.station_id = #{stationId}
+              AND YEAR(lc.year) = #{year}
+              AND lc.role_grade_name = #{s1}
+        ORDER BY operator_time DESC
+        limit 1
+    </select>
+
+
+
+    <resultMap id="findLogByZAMapA" type="com.cj.exclecheck.entity.RespExamineResult" >
+        <result column="factory_id" property="factoryId"/>
+        <result column="factory_name" property="factoryName"/>
+        <result column="task_area_id" property="taskAreaId"/>
+        <result column="task_area_name" property="taskAreaName"/>
+        <result column="full_name" property="fullName"/>
+        <result column="check_opinion" property="checkOpinion"/>
+        <result column="check_msg" property="checkMsg"/>
+        <result column="operator_time" property="operatorTime"/>
+    </resultMap>
+
+    <select id="findLogByZA" resultMap="findLogByZAMapA">
+        SELECT
+            lc.*,
+
+            ta.`task_area_id`,
+            ta.`task_area_name`,
+            fbm.`factory_id`,
+            fbm.`factory_name`
+        FROM
+            log_check lc
+
+            LEFT JOIN task_area ta
+                ON lc.`task_area_id` = ta.`task_area_id`
+            LEFT JOIN factory_basic_msg fbm
+                ON ta.`factory_id` = fbm.`factory_id`
+
+        WHERE lc.task_area_id = #{taskAreaId}
+              AND YEAR(lc.year) = #{year}
+              AND lc.role_grade_name = #{s1}
+        ORDER BY operator_time DESC
+        limit 1
+    </select>
+
+
+
+    <resultMap id="findLogByQAMap" type="com.cj.exclecheck.entity.RespExamineResult" >
+        <result column="factory_id" property="factoryId"/>
+        <result column="factory_name" property="factoryName"/>
+
+        <result column="full_name" property="fullName"/>
+        <result column="check_opinion" property="checkOpinion"/>
+        <result column="check_msg" property="checkMsg"/>
+        <result column="operator_time" property="operatorTime"/>
+    </resultMap>
+    <select id="findLogByQA" resultMap="findLogByQAMap">
+        SELECT
+            lc.*,
+
+            fbm.`factory_id`,
+            fbm.`factory_name`
+        FROM
+            log_check lc
+            LEFT JOIN factory_basic_msg fbm
+                ON lc.`factory_id` = fbm.`factory_id`
+
+        WHERE lc.factory_id = #{factoryId}
+              AND YEAR(lc.year) = #{year}
+              AND lc.role_grade_name = #{s1}
+        ORDER BY operator_time DESC
+        limit 1
+    </select>
+
+    <!--查询是否有自己的日志 并且 日志内容是 已提交-->
+    <select id="findLogByC" resultMap="findLogByZAMap">
+        SELECT lc.* ,s.`station_name`,ta.`task_area_id`,ta.`task_area_name`,fbm.`factory_id`,fbm.`factory_name`,ft.factory_type_name
+        FROM log_check lc
+            LEFT JOIN station s ON lc.`station_id` = s.`station_id`
+            LEFT JOIN task_area ta ON s.`task_area_id` = ta.`task_area_id`
+            LEFT JOIN factory_basic_msg fbm ON ta.`factory_id` = fbm.`factory_id`
+            LEFT JOIN factory_type ft ON ft.factory_type_id = s.factory_type_id
+        WHERE lc.station_id = #{stationId}
+              AND YEAR(lc.year) = #{year}
+              AND lc.role_grade_name = #{s1}
+              AND lc.check_msg = '已提交'
+        ORDER BY operator_time DESC
+        limit 1
+    </select>
+
+    <!--查询该账号所管理的气矿id  只有一个-->
+    <select id="findFactoryAdminId" resultType="java.lang.Long" parameterType="java.lang.Long">
+        SELECT popedom_id
+        FROM auth_admin_popedom
+        WHERE admin_id = #{adminId}
+              AND popedom_grade = '2'
+        LIMIT 1
+    </select>
+
+
+
+    <!--映射-->
+    <resultMap id="findStationListByFactoryIdMap" type="com.cj.common.entity.Station">
+        <id column="station_id" property="stationId" jdbcType="BIGINT"/>
+        <result column="task_area_id" property="taskAreaId" jdbcType="BIGINT"/>
+        <result column="station_core_id" property="stationCoreId" jdbcType="BIGINT"/>
+        <result column="factory_type_id" property="factoryTypeId" jdbcType="BIGINT"/>
+        <result column="station_name" property="stationName" jdbcType="VARCHAR"/>
+        <result column="production_time" property="productionTime" jdbcType="TIMESTAMP"/>
+        <result column="popedom_grade" property="popedomGrade" jdbcType="CHAR"/>
+    </resultMap>
+    <!--查询该气矿下 所有的 场站id-->
+    <select id="findStationListByFactoryId" parameterType="java.lang.Long" resultMap="findStationListByFactoryIdMap">
+        SELECT s.*
+        FROM factory_basic_msg fbm
+            LEFT JOIN task_area ta ON fbm.`factory_id` = ta.`factory_id`
+            LEFT JOIN station s ON s.`task_area_id` = ta.`task_area_id`
+        WHERE fbm.`factory_id` = #{factoryId}
+    </select>
+
+    <!--根据adminId 查询所管理的所有作业区Id集合-->
+    <select id="findTaskAreaIdListByAdminId" resultType="java.lang.Long" parameterType="java.lang.Long">
+        SELECT ta.`task_area_id`
+        FROM task_area ta
+        WHERE ta.`factory_id` IN
+              (
+
+                  SELECT aap.`popedom_id`
+                  FROM auth_admin_popedom aap
+                  WHERE aap.`admin_id` = #{adminId}
+                        AND aap.`popedom_grade` = 2
+              )
+    </select>
+
+
+    <!--查询作业区下所管理的场站id集合-->
+    <select id="findStationIdListByAdminId" resultType="java.lang.Long" parameterType="java.lang.Long">
+        SELECT s.`station_id`
+        FROM station s
+        WHERE s.`task_area_id` IN
+              (
+
+                  SELECT aap.`popedom_id`
+                  FROM auth_admin_popedom aap
+                  WHERE aap.`admin_id` = #{adminId}
+                        AND aap.`popedom_grade` = 3
+              )
+    </select>
+</mapper>

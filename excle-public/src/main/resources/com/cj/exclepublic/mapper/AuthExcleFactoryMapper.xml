@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclepublic.mapper.AuthExcleFactoryMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.AuthExcleFactory" >
+    <id column="auth_excle_factory_id" property="authExcleFactoryId" jdbcType="BIGINT" />
+    <result column="excle_table_id" property="excleTableId" jdbcType="BIGINT" />
+    <result column="factory_type_id" property="factoryTypeId" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    auth_excle_factory_id, excle_table_id, factory_type_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from auth_excle_factory
+    where auth_excle_factory_id = #{authExcleFactoryId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from auth_excle_factory
+    where auth_excle_factory_id = #{authExcleFactoryId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.AuthExcleFactory" >
+    insert into auth_excle_factory (auth_excle_factory_id, excle_table_id, factory_type_id
+      )
+    values (#{authExcleFactoryId,jdbcType=BIGINT}, #{excleTableId,jdbcType=BIGINT}, #{factoryTypeId,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.AuthExcleFactory" >
+    insert into auth_excle_factory
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="authExcleFactoryId != null" >
+        auth_excle_factory_id,
+      </if>
+      <if test="excleTableId != null" >
+        excle_table_id,
+      </if>
+      <if test="factoryTypeId != null" >
+        factory_type_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="authExcleFactoryId != null" >
+        #{authExcleFactoryId,jdbcType=BIGINT},
+      </if>
+      <if test="excleTableId != null" >
+        #{excleTableId,jdbcType=BIGINT},
+      </if>
+      <if test="factoryTypeId != null" >
+        #{factoryTypeId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.AuthExcleFactory" >
+    update auth_excle_factory
+    <set >
+      <if test="excleTableId != null" >
+        excle_table_id = #{excleTableId,jdbcType=BIGINT},
+      </if>
+      <if test="factoryTypeId != null" >
+        factory_type_id = #{factoryTypeId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where auth_excle_factory_id = #{authExcleFactoryId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.AuthExcleFactory" >
+    update auth_excle_factory
+    set excle_table_id = #{excleTableId,jdbcType=BIGINT},
+      factory_type_id = #{factoryTypeId,jdbcType=BIGINT}
+    where auth_excle_factory_id = #{authExcleFactoryId,jdbcType=BIGINT}
+  </update>
+
+  <!--批量新增数据-->
+  <insert id="addList" parameterType="java.util.Map">
+    INSERT INTO
+    auth_excle_factory(excle_table_id, factory_type_id)
+    VALUES
+    <foreach collection="factoryTypeIds" item="item" index="index" separator=",">
+      (#{excleTableId},#{item})
+    </foreach>
+  </insert>
+</mapper>

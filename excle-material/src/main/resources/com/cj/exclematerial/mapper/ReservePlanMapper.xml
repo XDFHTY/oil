@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclematerial.mapper.ReservePlanMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.ReservePlan" >
+    <id column="reserve_plan_id" property="reservePlanId" jdbcType="BIGINT" />
+    <result column="task_area" property="taskArea" jdbcType="BIGINT" />
+    <result column="file_reserve" property="fileReserve" jdbcType="VARCHAR" />
+    <result column="record" property="record" jdbcType="CHAR" />
+    <result column="record_time" property="recordTime" jdbcType="DATE" />
+    <result column="record_reason" property="recordReason" jdbcType="VARCHAR" />
+    <result column="file_record" property="fileRecord" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="ExcelResultMap" type="com.cj.exclematerial.pojo.ReservePlanBo" >
+    <id column="reserve_plan_id" property="reservePlanId" jdbcType="BIGINT" />
+    <result column="task_area_id" property="taskAreaId" jdbcType="BIGINT" />
+    <result column="file_reserve" property="fileReserve" jdbcType="VARCHAR" />
+    <result column="record" property="record" jdbcType="CHAR" />
+    <result column="record_time" property="recordTime" jdbcType="DATE" />
+    <result column="record_reason" property="recordReason" jdbcType="VARCHAR" />
+    <result column="file_record" property="fileRecord" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    reserve_plan_id, task_area_id, file_reserve, record, record_time, record_reason, file_record
+  </sql>
+  <sql id="ContingencyPlanVo">
+    reserve_plan_id, task_area_id, file_reserve, record, record_time, record_reason, file_record
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from reserve_plan
+    where reserve_plan_id = #{reservePlanId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from reserve_plan
+    where reserve_plan_id = #{reservePlanId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.ReservePlan" >
+    insert into reserve_plan (reserve_plan_id, task_area_id, file_reserve,
+      record, record_time, record_reason, 
+      file_record)
+    values (#{reservePlanId,jdbcType=BIGINT}, #{taskAreaId,jdbcType=BIGINT}, #{fileReserve,jdbcType=VARCHAR},
+      #{record,jdbcType=CHAR}, #{recordTime,jdbcType=DATE}, #{recordReason,jdbcType=VARCHAR}, 
+      #{fileRecord,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.ReservePlan" >
+    insert into reserve_plan
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="reservePlanId != null" >
+        reserve_plan_id,
+      </if>
+      <if test="taskAreaId != null" >
+        task_area_id,
+      </if>
+      <if test="fileReserve != null" >
+        file_reserve,
+      </if>
+      <if test="record != null" >
+        record,
+      </if>
+      <if test="recordTime != null" >
+        record_time,
+      </if>
+      <if test="recordReason != null" >
+        record_reason,
+      </if>
+      <if test="fileRecord != null" >
+        file_record,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="reservePlanId != null" >
+        #{reservePlanId,jdbcType=BIGINT},
+      </if>
+      <if test="taskAreaId != null" >
+        #{taskAreaId,jdbcType=BIGINT},
+      </if>
+      <if test="fileReserve != null" >
+        #{fileReserve,jdbcType=VARCHAR},
+      </if>
+      <if test="record != null" >
+        #{record,jdbcType=CHAR},
+      </if>
+      <if test="recordTime != null" >
+        #{recordTime,jdbcType=DATE},
+      </if>
+      <if test="recordReason != null" >
+        #{recordReason,jdbcType=VARCHAR},
+      </if>
+      <if test="fileRecord != null" >
+        #{fileRecord,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.ReservePlan" >
+    update reserve_plan
+    <set >
+      <if test="taskAreaId != null" >
+        task_area_id = #{taskAreaId,jdbcType=BIGINT},
+      </if>
+      <if test="fileReserve != null" >
+        file_reserve = #{fileReserve,jdbcType=VARCHAR},
+      </if>
+      <if test="record != null" >
+        record = #{record,jdbcType=CHAR},
+      </if>
+      <if test="recordTime != null" >
+        record_time = #{recordTime,jdbcType=DATE},
+      </if>
+      <if test="recordReason != null" >
+        record_reason = #{recordReason,jdbcType=VARCHAR},
+      </if>
+      <if test="fileRecord != null" >
+        file_record = #{fileRecord,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where reserve_plan_id = #{reservePlanId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.ReservePlan" >
+    update reserve_plan
+    set task_area_id = #{taskAreaId,jdbcType=BIGINT},
+      file_reserve = #{fileReserve,jdbcType=VARCHAR},
+      record = #{record,jdbcType=CHAR},
+      record_time = #{recordTime,jdbcType=DATE},
+      record_reason = #{recordReason,jdbcType=VARCHAR},
+      file_record = #{fileRecord,jdbcType=VARCHAR}
+    where reserve_plan_id = #{reservePlanId,jdbcType=BIGINT}
+  </update>
+
+  <!--根据Query查询预案信息-->
+  <select id="findByQuery" resultType="java.util.Map" parameterType="java.util.Map" >
+    SELECT reserve_plan.reserve_plan_id reservePlanId,
+    task_area.task_area_name taskAreaName,
+    factory_basic_msg.factory_name factoryName,
+    reserve_plan.file_reserve fileReserve,
+    reserve_plan.record_time recordTime,
+    reserve_plan.record_reason recordReason,
+    reserve_plan.file_record fileRecord,
+    reserve_plan.record
+    FROM reserve_plan
+    LEFT JOIN task_area ON reserve_plan.task_area_id=task_area.task_area_id
+    LEFT JOIN factory_basic_msg ON task_area.factory_id=factory_basic_msg.factory_id
+    WHERE 1=1
+    <if test="datetime!=null">
+      AND year(record_time)=#{datetime}
+    </if>
+    <if test="factoryId!=null">
+      AND factory_basic_msg.factory_id=#{factoryId}
+    </if>
+    <if test="taskAreaId!=null">
+      AND task_area.task_area_id=#{taskAreaId}
+    </if>
+    <if test="stationId!=null">
+      AND station_id=#{stationId}
+    </if>
+
+  </select>
+
+  <!--根据Query查询预案信息Excel-->
+  <select id="selectExcelReservePlan" resultMap="ExcelResultMap" parameterType="java.util.Map" >
+    select
+    <include refid="Base_Column_List" />
+    from reserve_plan WHERE 1=1
+    <if test="datetime!=null">
+      AND year(record_time)=#{datetime}
+    </if>
+    <if test="factoryId!=null">
+      AND factory_id=#{factoryId}
+    </if>
+    <if test="taskAreaId!=null">
+      AND task_area=#{taskAreaId}
+    </if>
+  </select>
+</mapper>

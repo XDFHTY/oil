@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclemeasures.mapper.MeasuresLastMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.MeasuresLast" >
+    <id column="last_measures_id" property="lastMeasuresId" jdbcType="BIGINT" />
+    <result column="station_id" property="stationId" jdbcType="BIGINT" />
+    <result column="year" property="year" jdbcType="DATE" />
+    <result column="last_measures" property="lastMeasures" jdbcType="VARCHAR" />
+    <result column="measures_completed" property="measuresCompleted" jdbcType="VARCHAR" />
+    <result column="measures_content" property="measuresContent" jdbcType="VARCHAR" />
+    <result column="last_person_liable" property="lastPersonLiable" jdbcType="VARCHAR" />
+    <result column="completion_time" property="completionTime" jdbcType="DATE" />
+    <result column="no_start_plan" property="noStartPlan" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="CHAR" />
+    <result column="founder_id" property="founderId" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="operator_id" property="operatorId" jdbcType="BIGINT" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="factory_name" property="factoryName" jdbcType="VARCHAR" />
+    <result column="task_area_name" property="taskAreaName" jdbcType="VARCHAR" />
+    <result column="station_name" property="stationName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    last_measures_id, station_id, year, last_measures, measures_completed, measures_content, 
+    last_person_liable, completion_time, no_start_plan, state, founder_id, create_time, 
+    operator_id, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from measures_last
+    where last_measures_id = #{lastMeasuresId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from measures_last
+    where last_measures_id = #{lastMeasuresId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.MeasuresLast" >
+    insert into measures_last (last_measures_id, station_id, year, 
+      last_measures, measures_completed, measures_content, 
+      last_person_liable, completion_time, no_start_plan, 
+      state, founder_id, create_time, 
+      operator_id, update_time)
+    values (#{lastMeasuresId,jdbcType=BIGINT}, #{stationId,jdbcType=BIGINT}, #{year,jdbcType=DATE}, 
+      #{lastMeasures,jdbcType=VARCHAR}, #{measuresCompleted,jdbcType=VARCHAR}, #{measuresContent,jdbcType=VARCHAR}, 
+      #{lastPersonLiable,jdbcType=VARCHAR}, #{completionTime,jdbcType=DATE}, #{noStartPlan,jdbcType=VARCHAR}, 
+      #{state,jdbcType=CHAR}, #{founderId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{operatorId,jdbcType=BIGINT}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.MeasuresLast" >
+    insert into measures_last
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="lastMeasuresId != null" >
+        last_measures_id,
+      </if>
+      <if test="stationId != null" >
+        station_id,
+      </if>
+      <if test="year != null" >
+        year,
+      </if>
+      <if test="lastMeasures != null" >
+        last_measures,
+      </if>
+      <if test="measuresCompleted != null" >
+        measures_completed,
+      </if>
+      <if test="measuresContent != null" >
+        measures_content,
+      </if>
+      <if test="lastPersonLiable != null" >
+        last_person_liable,
+      </if>
+      <if test="completionTime != null" >
+        completion_time,
+      </if>
+      <if test="noStartPlan != null" >
+        no_start_plan,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="founderId != null" >
+        founder_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="operatorId != null" >
+        operator_id,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="lastMeasuresId != null" >
+        #{lastMeasuresId,jdbcType=BIGINT},
+      </if>
+      <if test="stationId != null" >
+        #{stationId,jdbcType=BIGINT},
+      </if>
+      <if test="year != null" >
+        #{year,jdbcType=DATE},
+      </if>
+      <if test="lastMeasures != null" >
+        #{lastMeasures,jdbcType=VARCHAR},
+      </if>
+      <if test="measuresCompleted != null" >
+        #{measuresCompleted,jdbcType=VARCHAR},
+      </if>
+      <if test="measuresContent != null" >
+        #{measuresContent,jdbcType=VARCHAR},
+      </if>
+      <if test="lastPersonLiable != null" >
+        #{lastPersonLiable,jdbcType=VARCHAR},
+      </if>
+      <if test="completionTime != null" >
+        #{completionTime,jdbcType=DATE},
+      </if>
+      <if test="noStartPlan != null" >
+        #{noStartPlan,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=CHAR},
+      </if>
+      <if test="founderId != null" >
+        #{founderId,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operatorId != null" >
+        #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.MeasuresLast" >
+    update measures_last
+    <set >
+      <if test="stationId != null" >
+        station_id = #{stationId,jdbcType=BIGINT},
+      </if>
+      <if test="year != null" >
+        year = #{year,jdbcType=DATE},
+      </if>
+      <if test="lastMeasures != null" >
+        last_measures = #{lastMeasures,jdbcType=VARCHAR},
+      </if>
+      <if test="measuresCompleted != null" >
+        measures_completed = #{measuresCompleted,jdbcType=VARCHAR},
+      </if>
+      <if test="measuresContent != null" >
+        measures_content = #{measuresContent,jdbcType=VARCHAR},
+      </if>
+      <if test="lastPersonLiable != null" >
+        last_person_liable = #{lastPersonLiable,jdbcType=VARCHAR},
+      </if>
+      <if test="completionTime != null" >
+        completion_time = #{completionTime,jdbcType=DATE},
+      </if>
+      <if test="noStartPlan != null" >
+        no_start_plan = #{noStartPlan,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=CHAR},
+      </if>
+      <if test="founderId != null" >
+        founder_id = #{founderId,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operatorId != null" >
+        operator_id = #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where last_measures_id = #{lastMeasuresId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.MeasuresLast" >
+    update measures_last
+    set station_id = #{stationId,jdbcType=BIGINT},
+      year = #{year,jdbcType=DATE},
+      last_measures = #{lastMeasures,jdbcType=VARCHAR},
+      measures_completed = #{measuresCompleted,jdbcType=VARCHAR},
+      measures_content = #{measuresContent,jdbcType=VARCHAR},
+      last_person_liable = #{lastPersonLiable,jdbcType=VARCHAR},
+      completion_time = #{completionTime,jdbcType=DATE},
+      no_start_plan = #{noStartPlan,jdbcType=VARCHAR},
+      state = #{state,jdbcType=CHAR},
+      founder_id = #{founderId,jdbcType=BIGINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      operator_id = #{operatorId,jdbcType=BIGINT},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where last_measures_id = #{lastMeasuresId,jdbcType=BIGINT}
+  </update>
+
+
+  <!--查询场站上面度数据-->
+  <select id="findMeasuresByLastYear" parameterType="com.cj.core.domain.Pager"
+          resultMap="com.cj.exclemeasures.mapper.MeasuresLastMapper.BaseResultMap,
+          com.cj.common.mapper.PublicMapper.PagerTotal">
+    SELECT
+    SQL_CALC_FOUND_ROWS
+    fbm.factory_name,ta.task_area_name,s.station_name,
+     last_measures_id, m.station_id, year, last_measures, measures_completed, measures_content,
+    last_person_liable, completion_time, no_start_plan, state, founder_id, create_time,
+    operator_id, update_time
+    FROM
+    measures_last m
+    LEFT JOIN station s ON s.station_id = m.station_id
+    LEFT JOIN task_area ta ON ta.task_area_id = s.task_area_id
+    LEFT JOIN factory_basic_msg fbm ON fbm.factory_id = ta.factory_id
+    WHERE
+    m.station_id = #{parameters.stationId}
+    AND
+    DATE_FORMAT(m.`year`,'%Y')=#{parameters.year}
+    AND
+    m.state = '1'
+    LIMIT #{minRow},#{pageSize};
+
+    SELECT FOUND_ROWS() AS total;
+  </select>
+
+  <!--批量新增上年度环境风险防控与应急措施数据-->
+  <insert id="addMeasuresByLastYear" parameterType="java.util.List">
+    insert into
+    measures_last
+    (
+    station_id,
+    year,
+    last_measures,
+    measures_completed,
+    measures_content,
+    last_person_liable,
+    completion_time,
+    no_start_plan,
+    founder_id,
+    create_time
+    )
+
+    <foreach collection="list" item="item" index="index" separator="," open="values">
+      (
+      #{item.stationId},
+      #{item.year},
+      #{item.lastMeasures},
+      #{item.measuresCompleted},
+      #{item.measuresContent},
+      #{item.lastPersonLiable},
+      #{item.completionTime},
+      #{item.noStartPlan},
+      #{item.founderId},
+      #{item.createTime}
+      )
+    </foreach>
+  </insert>
+
+  <!--批量编辑场站 上年度 信息-->
+  <update id="updateMeasuresByLastYear" parameterType="java.util.List">
+    <foreach collection="list" item="item" index="index" separator=";">
+      update measures_last
+      <set >
+
+        <if test="item.lastMeasures != null" >
+          last_measures = #{item.lastMeasures,jdbcType=VARCHAR},
+        </if>
+        <if test="item.measuresCompleted != null" >
+          measures_completed = #{item.measuresCompleted,jdbcType=VARCHAR},
+        </if>
+        <if test="item.measuresContent != null" >
+          measures_content = #{item.measuresContent,jdbcType=VARCHAR},
+        </if>
+        <if test="item.lastPersonLiable != null" >
+          last_person_liable = #{item.lastPersonLiable,jdbcType=VARCHAR},
+        </if>
+        <if test="item.completionTime != null" >
+          completion_time = #{item.completionTime,jdbcType=DATE},
+        </if>
+        <if test="item.noStartPlan != null" >
+          no_start_plan = #{item.noStartPlan,jdbcType=VARCHAR},
+        </if>
+        <if test="item.state != null" >
+          state = #{item.state,jdbcType=CHAR},
+        </if>
+
+        <if test="item.operatorId != null" >
+          operator_id = #{item.operatorId,jdbcType=BIGINT},
+        </if>
+
+      </set>
+      where
+      last_measures_id = #{item.lastMeasuresId,jdbcType=BIGINT}
+
+    </foreach>
+  </update>
+</mapper>

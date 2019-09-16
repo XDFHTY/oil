@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclematerial.mapper.StationMaterialMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.StationMaterial" >
+    <id column="station_material_id" property="stationMaterialId" jdbcType="BIGINT" />
+    <result column="station_id" property="stationId" jdbcType="BIGINT" />
+    <result column="material_id" property="materialId" jdbcType="BIGINT" />
+    <result column="material_num" property="materialNum" jdbcType="INTEGER" />
+    <result column="year" property="year" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    station_material_id, station_id, material_id, material_num, year
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from station_material
+    where station_material_id = #{stationMaterialId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from station_material
+    where station_material_id = #{stationMaterialId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.StationMaterial" >
+    insert into station_material (station_material_id, station_id, material_id, 
+      material_num, year)
+    values (#{stationMaterialId,jdbcType=BIGINT}, #{stationId,jdbcType=BIGINT}, #{materialId,jdbcType=BIGINT}, 
+      #{materialNum,jdbcType=INTEGER}, #{year,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.StationMaterial" >
+    insert into station_material
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="stationMaterialId != null" >
+        station_material_id,
+      </if>
+      <if test="stationId != null" >
+        station_id,
+      </if>
+      <if test="materialId != null" >
+        material_id,
+      </if>
+      <if test="materialNum != null" >
+        material_num,
+      </if>
+      <if test="year != null" >
+        year,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="stationMaterialId != null" >
+        #{stationMaterialId,jdbcType=BIGINT},
+      </if>
+      <if test="stationId != null" >
+        #{stationId,jdbcType=BIGINT},
+      </if>
+      <if test="materialId != null" >
+        #{materialId,jdbcType=BIGINT},
+      </if>
+      <if test="materialNum != null" >
+        #{materialNum,jdbcType=INTEGER},
+      </if>
+      <if test="year != null" >
+        #{year,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.StationMaterial" >
+    update station_material
+    <set >
+      <if test="stationId != null" >
+        station_id = #{stationId,jdbcType=BIGINT},
+      </if>
+      <if test="materialId != null" >
+        material_id = #{materialId,jdbcType=BIGINT},
+      </if>
+      <if test="materialNum != null" >
+        material_num = #{materialNum,jdbcType=INTEGER},
+      </if>
+      <if test="year != null" >
+        year = #{year,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where station_material_id = #{stationMaterialId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.StationMaterial" >
+    update station_material
+    set station_id = #{stationId,jdbcType=BIGINT},
+      material_id = #{materialId,jdbcType=BIGINT},
+      material_num = #{materialNum,jdbcType=INTEGER},
+      year = #{year,jdbcType=TIMESTAMP}
+    where station_material_id = #{stationMaterialId,jdbcType=BIGINT}
+  </update>
+
+
+  <insert id="addStationMaterialList" parameterType="java.util.List" >
+    <foreach collection ="list" item="reddemCode" index= "index" separator =";">
+      insert into station_material
+      <trim prefix="(" suffix=")" suffixOverrides="," >
+        <if test="reddemCode.stationMaterialId != null" >
+          station_material_id,
+        </if>
+        <if test="reddemCode.stationId != null" >
+          station_id,
+        </if>
+        <if test="reddemCode.materialId != null" >
+          material_id,
+        </if>
+        <if test="reddemCode.materialNum != null" >
+          material_num,
+        </if>
+        <if test="reddemCode.year != null" >
+          year,
+        </if>
+      </trim>
+      <trim prefix="values (" suffix=")" suffixOverrides="," >
+        <if test="reddemCode.stationMaterialId != null" >
+          #{reddemCode.stationMaterialId,jdbcType=BIGINT},
+        </if>
+        <if test="reddemCode.stationId != null" >
+          #{reddemCode.stationId,jdbcType=BIGINT},
+        </if>
+        <if test="reddemCode.materialId != null" >
+          #{reddemCode.materialId,jdbcType=BIGINT},
+        </if>
+        <if test="reddemCode.materialNum != null" >
+          #{reddemCode.materialNum,jdbcType=INTEGER},
+        </if>
+        <if test="reddemCode.year != null" >
+          #{reddemCode.year,jdbcType=TIMESTAMP},
+        </if>
+      </trim>
+    </foreach>
+  </insert>
+
+  <select id="selectStationMaterialId" parameterType="com.cj.common.entity.StationMaterial" resultType="java.lang.Long">
+    SELECT
+        station_material_id
+    FROM
+        station_material
+    WHERE
+        station_id = #{stationId}
+    AND material_id = #{materialId}
+    AND year = #{year}
+  </select>
+
+  <!--查询此场站、此物资、此年是否已存在-->
+  <select id="findStationIdAndMaterialId" resultMap="BaseResultMap">
+    SELECT
+    sm.*
+    FROM
+    station_material sm
+    WHERE
+    sm.station_id = #{stationId}
+    AND
+    sm.material_id = #{materialId}
+    AND
+    YEAR(sm.`year`) = #{year}
+  </select>
+</mapper>

@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.cj</groupId>
+	<artifactId>server</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>server</name>
+	<description>Demo project for Spring Boot</description>
+
+	<parent>
+		<groupId>com.cj</groupId>
+		<artifactId>oil</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+
+		<swagger-api>http://localhost:8085/v2/api-docs</swagger-api>
+		<asciidoctor.input.directory>${project.basedir}/docs</asciidoctor.input.directory>
+		<generated.asciidoc.directory>${project.basedir}/docs/doc</generated.asciidoc.directory>
+		<asciidoctor.html.output.directory>${project.basedir}/docs/html</asciidoctor.html.output.directory>
+		<asciidoctor.pdf.output.directory>${project.basedir}/docs/pdf</asciidoctor.pdf.output.directory>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>com.cj</groupId>
+			<artifactId>excle-basics</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.cj</groupId>
+			<artifactId>excle-grade</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.cj</groupId>
+			<artifactId>excle-measures</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.cj</groupId>
+			<artifactId>excle-ledger</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.cj</groupId>
+			<artifactId>excle-material</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.cj</groupId>
+			<artifactId>excle-assessment</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.cj</groupId>
+			<artifactId>excle-analysis</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.cj</groupId>
+			<artifactId>organization</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.cj</groupId>
+			<artifactId>admin</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.cj</groupId>
+			<artifactId>excle-log</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.cj</groupId>
+			<artifactId>excle-check</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+
+
+		<!-- https://mvnrepository.com/artifact/io.github.swagger2markup/swagger2markup -->
+		<dependency>
+			<groupId>io.github.swagger2markup</groupId>
+			<artifactId>swagger2markup</artifactId>
+			<version>1.3.3</version>
+		</dependency>
+
+
+	</dependencies>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.xml</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**.*</include>
+					<include>**/*.*</include><!-- i18n能读取到 -->
+					<include>**/*/*.*</include>
+				</includes>
+			</resource>
+		</resources>
+		<plugins>
+
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+
+				<configuration>
+					<fork>true</fork> <!-- 如果没有该配置，devtools不会生效 -->
+					<!-- 指定该Main Class为全局的唯一入口 -->
+					<mainClass>com.cj.server.ServerApplication</mainClass>
+					<layout>ZIP</layout>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal><!--可以把依赖的包都打包到生成的Jar包中-->
+						</goals>
+						<!--可以生成不含依赖包的不可执行Jar包-->
+						<!--<configuration>-->
+						<!--<classifier>exec</classifier>-->
+						<!--</configuration>-->
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+
+			<!--通过Asciidoctor使得asciidoc生成其他的文档格式，例如：PDF 或者HTML5-->
+			<!--通过swagger的api接口文档生成adoc文件-->
+			<plugin>
+				<groupId>io.github.swagger2markup</groupId>
+				<artifactId>swagger2markup-maven-plugin</artifactId>
+				<version>1.3.1</version>
+				<configuration>
+					<!--从swagger-ui接口取json数据 生成adoc-->
+					<swaggerInput>${swagger-api}</swaggerInput>
+					<!--adoc输出路径-->
+					<outputDir>${generated.asciidoc.directory}</outputDir>
+					<config>
+						<swagger2markup.markupLanguage>ASCIIDOC</swagger2markup.markupLanguage>
+					</config>
+				</configuration>
+			</plugin>
+			<!--通过adoc文件生成html或pdf文档-->
+			<!--<plugin>-->
+				<!--<groupId>org.asciidoctor</groupId>-->
+				<!--<artifactId>asciidoctor-maven-plugin</artifactId>-->
+				<!--<version>1.5.6</version>-->
+				<!--<dependencies>-->
+					<!--<dependency>-->
+						<!--<groupId>org.asciidoctor</groupId>-->
+						<!--<artifactId>asciidoctorj-pdf</artifactId>-->
+						<!--<version>LATEST</version>-->
+					<!--</dependency>-->
+					<!--<dependency>-->
+						<!--<groupId>org.jruby</groupId>-->
+						<!--<artifactId>jruby-complete</artifactId>-->
+						<!--<version>1.7.21</version>-->
+					<!--</dependency>-->
+				<!--</dependencies>-->
+				<!--<configuration>-->
+					<!--&lt;!&ndash;adoc文件的地址&ndash;&gt;-->
+					<!--<sourceDirectory>${generated.asciidoc.directory}</sourceDirectory>-->
+					<!--&lt;!&ndash;&lt;!&ndash;生成文件的输出路径&ndash;&gt;&ndash;&gt;-->
+					<!--&lt;!&ndash;<outputDirectory>${asciidoctor.html.output.directory}</outputDirectory>&ndash;&gt;-->
+					<!--&lt;!&ndash;&lt;!&ndash;生成文件类型，可以是pdf和HTML，pdf中文缺失，建议生成html&ndash;&gt;&ndash;&gt;-->
+					<!--&lt;!&ndash;<backend>html</backend>&ndash;&gt;-->
+					<!--<sourceHighlighter>coderay</sourceHighlighter>-->
+					<!--<attributes>-->
+						<!--<toc>left</toc>-->
+					<!--</attributes>-->
+				<!--</configuration>-->
+				<!--<executions>-->
+					<!--<execution>-->
+						<!--<id>output-html</id>-->
+						<!--<phase>generate-resources</phase>-->
+						<!--<goals>-->
+							<!--<goal>process-asciidoc</goal>-->
+						<!--</goals>-->
+						<!--<configuration>-->
+							<!--<backend>html5</backend>-->
+							<!--<outputDirectory>${asciidoctor.html.output.directory}</outputDirectory>-->
+						<!--</configuration>-->
+					<!--</execution>-->
+
+					<!--<execution>-->
+						<!--<id>output-pdf</id>-->
+						<!--<phase>generate-resources</phase>-->
+						<!--<goals>-->
+							<!--<goal>process-asciidoc</goal>-->
+						<!--</goals>-->
+						<!--<configuration>-->
+							<!--<backend>pdf</backend>-->
+							<!--<outputDirectory>${asciidoctor.pdf.output.directory}</outputDirectory>-->
+						<!--</configuration>-->
+					<!--</execution>-->
+				<!--</executions>-->
+			<!--</plugin>-->
+
+            <!-- maven插件:docker-maven-plugin -->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.4.13</version>
+                <configuration>
+                    <!--镜像名称,不能大写-->
+                    <imageName>oildev</imageName>
+                    <!--docker容器服务器地址-->
+                    <dockerHost>http://47.92.129.254:12375</dockerHost>
+
+
+                    <!--Dockerfile文件路径-->
+                    <dockerDirectory>src/main/docker</dockerDirectory>
+                    <resources>
+                        <resource>
+                            <!--上下文路径-->
+                            <targetPath>/</targetPath>
+                            <!--包路径-->
+                            <directory>${project.build.directory}</directory>
+                            <!--包名-->
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                </configuration>
+            </plugin>
+
+		</plugins>
+		<finalName>OilServer</finalName>
+
+
+
+	</build>
+
+
+</project>

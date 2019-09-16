@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclepublic.mapper.TableRecordMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.TableRecord" >
+    <id column="table_record_id" property="tableRecordId" jdbcType="BIGINT" />
+    <result column="station_id" property="stationId" jdbcType="BIGINT" />
+    <result column="table_type" property="tableType" jdbcType="CHAR" />
+    <result column="excle_table_id" property="excleTableId" jdbcType="BIGINT" />
+    <result column="year" property="year" jdbcType="DATE" />
+    <result column="founder_id" property="founderId" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="operator_id" property="operatorId" jdbcType="BIGINT" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="check_type" property="checkType" jdbcType="CHAR" />
+    <result column="check_id" property="checkId" jdbcType="BIGINT" />
+    <result column="check_time" property="checkTime" jdbcType="TIMESTAMP" />
+    <result column="check_comments" property="checkComments" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    table_record_id, station_id, table_type, excle_table_id, year, founder_id, create_time,
+    operator_id, update_time, check_type, check_id, check_time, check_comments
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from table_record
+    where table_record_id = #{tableRecordId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from table_record
+    where table_record_id = #{tableRecordId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.TableRecord" >
+    insert into table_record (table_record_id, station_id, table_type,
+    excle_table_id, year, founder_id,
+    create_time, operator_id, update_time,
+    check_type, check_id, check_time,
+    check_comments)
+    values (#{tableRecordId,jdbcType=BIGINT}, #{stationId,jdbcType=BIGINT}, #{tableType,jdbcType=CHAR},
+    #{excleTableId,jdbcType=BIGINT}, #{year,jdbcType=DATE}, #{founderId,jdbcType=BIGINT},
+    #{createTime,jdbcType=TIMESTAMP}, #{operatorId,jdbcType=BIGINT}, #{updateTime,jdbcType=TIMESTAMP},
+    #{checkType,jdbcType=CHAR}, #{checkId,jdbcType=BIGINT}, #{checkTime,jdbcType=TIMESTAMP},
+    #{checkComments,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.TableRecord" >
+    <selectKey order="AFTER" keyProperty="tableRecordId" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into table_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="tableRecordId != null" >
+        table_record_id,
+      </if>
+      <if test="stationId != null" >
+        station_id,
+      </if>
+      <if test="tableType != null" >
+        table_type,
+      </if>
+      <if test="excleTableId != null" >
+        excle_table_id,
+      </if>
+      <if test="year != null" >
+        year,
+      </if>
+      <if test="founderId != null" >
+        founder_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="operatorId != null" >
+        operator_id,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="checkType != null" >
+        check_type,
+      </if>
+      <if test="checkId != null" >
+        check_id,
+      </if>
+      <if test="checkTime != null" >
+        check_time,
+      </if>
+      <if test="checkComments != null" >
+        check_comments,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="tableRecordId != null" >
+        #{tableRecordId,jdbcType=BIGINT},
+      </if>
+      <if test="stationId != null" >
+        #{stationId,jdbcType=BIGINT},
+      </if>
+      <if test="tableType != null" >
+        #{tableType,jdbcType=CHAR},
+      </if>
+      <if test="excleTableId != null" >
+        #{excleTableId,jdbcType=BIGINT},
+      </if>
+      <if test="year != null" >
+        YEAR(#{year,jdbcType=DATE}),
+      </if>
+      <if test="founderId != null" >
+        #{founderId,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operatorId != null" >
+        #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkType != null" >
+        #{checkType,jdbcType=CHAR},
+      </if>
+      <if test="checkId != null" >
+        #{checkId,jdbcType=BIGINT},
+      </if>
+      <if test="checkTime != null" >
+        #{checkTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkComments != null" >
+        #{checkComments,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.TableRecord" >
+    update table_record
+    <set >
+      <if test="stationId != null" >
+        station_id = #{stationId,jdbcType=BIGINT},
+      </if>
+      <if test="tableType != null" >
+        table_type = #{tableType,jdbcType=CHAR},
+      </if>
+      <if test="excleTableId != null" >
+        excle_table_id = #{excleTableId,jdbcType=BIGINT},
+      </if>
+      <if test="year != null" >
+        `year` = YEAR(#{year,jdbcType=DATE}),
+      </if>
+      <if test="founderId != null" >
+        founder_id = #{founderId,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operatorId != null" >
+        operator_id = #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkType != null" >
+        check_type = #{checkType,jdbcType=CHAR},
+      </if>
+      <if test="checkId != null" >
+        check_id = #{checkId,jdbcType=BIGINT},
+      </if>
+      <if test="checkTime != null" >
+        check_time = #{checkTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkComments != null" >
+        check_comments = #{checkComments,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where table_record_id = #{tableRecordId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.TableRecord" >
+    update table_record
+    set station_id = #{stationId,jdbcType=BIGINT},
+    table_type = #{tableType,jdbcType=CHAR},
+    excle_table_id = #{excleTableId,jdbcType=BIGINT},
+    year = #{year,jdbcType=DATE},
+    founder_id = #{founderId,jdbcType=BIGINT},
+    create_time = #{createTime,jdbcType=TIMESTAMP},
+    operator_id = #{operatorId,jdbcType=BIGINT},
+    update_time = #{updateTime,jdbcType=TIMESTAMP},
+    check_type = #{checkType,jdbcType=CHAR},
+    check_id = #{checkId,jdbcType=BIGINT},
+    check_time = #{checkTime,jdbcType=TIMESTAMP},
+    check_comments = #{checkComments,jdbcType=VARCHAR}
+    where table_record_id = #{tableRecordId,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByExcleTabIdAndTime" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM table_record
+    WHERE
+    excle_table_id=#{excleTabId} AND `year` = #{year};
+  </select>
+
+
+  <!--查询该场站、该表、该年、该分类的数据-->
+  <select id="findTableRecord" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT
+    tr.*
+    FROM
+    table_record tr
+    <if test="tableName != null and tableName != '' ">
+      LEFT JOIN excle_table et ON et.excle_table_id = tr.excle_table_id
+      LEFT JOIN auth_excle_factory aef ON aef.excle_table_id = et.excle_table_id
+      LEFT JOIN station s ON s.factory_type_id = aef.factory_type_id
+    </if>
+    WHERE
+    tr.station_id = #{stationId}
+    <if test="tableType ==1 and tableName != null and tableName != '' ">
+      AND
+      et.excle_table_name = #{tableName}
+    </if>
+    AND
+    tr.`year` = #{year}
+    <if test="tableType==null or tableType == ''">
+      AND
+      tr.table_type = '1'
+
+    </if>
+    <if test="tableType !=null and tableType != ''">
+      AND
+      tr.table_type = #{tableType}
+
+    </if>
+    GROUP BY tr.`station_id`,tr.`excle_table_id`
+
+
+  </select>
+</mapper>

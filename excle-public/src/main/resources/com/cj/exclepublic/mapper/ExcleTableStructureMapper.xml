@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclepublic.mapper.ExcleTableStructureMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.ExcleTableStructure" >
+    <id column="excle_table_structure_id" property="excleTableStructureId" jdbcType="BIGINT" />
+    <result column="excle_table_id" property="excleTableId" jdbcType="BIGINT" />
+    <result column="start_row" property="startRow" jdbcType="INTEGER" />
+    <result column="end_row" property="endRow" jdbcType="INTEGER" />
+    <result column="start_col" property="startCol" jdbcType="INTEGER" />
+    <result column="end_col" property="endCol" jdbcType="INTEGER" />
+    <result column="cell_msg" property="cellMsg" jdbcType="VARCHAR" />
+    <result column="cell_height" property="cellHeight" jdbcType="INTEGER" />
+    <result column="cell_width" property="cellWidth" jdbcType="INTEGER" />
+    <result column="only_read" property="onlyRead" jdbcType="CHAR" />
+    <result column="table_head" property="tableHead" jdbcType="CHAR" />
+    <result column="hidden" property="hidden" jdbcType="CHAR" />
+    <result column="cell_type" property="cellType" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    excle_table_structure_id, excle_table_id, start_row, end_row, start_col, end_col,
+    cell_msg, cell_height, cell_width, only_read, table_head, hidden, cell_type
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from excle_table_structure
+    where excle_table_structure_id = #{excleTableStructureId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from excle_table_structure
+    where excle_table_structure_id = #{excleTableStructureId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.ExcleTableStructure" >
+    insert into excle_table_structure (excle_table_structure_id, excle_table_id,
+    start_row, end_row, start_col,
+    end_col, cell_msg, cell_height,
+    cell_width, only_read, table_head,
+    hidden, cell_type)
+    values (#{excleTableStructureId,jdbcType=BIGINT}, #{excleTableId,jdbcType=BIGINT},
+    #{startRow,jdbcType=INTEGER}, #{endRow,jdbcType=INTEGER}, #{startCol,jdbcType=INTEGER},
+    #{endCol,jdbcType=INTEGER}, #{cellMsg,jdbcType=VARCHAR}, #{cellHeight,jdbcType=INTEGER},
+    #{cellWidth,jdbcType=INTEGER}, #{onlyRead,jdbcType=CHAR}, #{tableHead,jdbcType=CHAR},
+    #{hidden,jdbcType=CHAR}, #{cellType,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.ExcleTableStructure" >
+    insert into excle_table_structure
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="excleTableStructureId != null" >
+        excle_table_structure_id,
+      </if>
+      <if test="excleTableId != null" >
+        excle_table_id,
+      </if>
+      <if test="startRow != null" >
+        start_row,
+      </if>
+      <if test="endRow != null" >
+        end_row,
+      </if>
+      <if test="startCol != null" >
+        start_col,
+      </if>
+      <if test="endCol != null" >
+        end_col,
+      </if>
+      <if test="cellMsg != null" >
+        cell_msg,
+      </if>
+      <if test="cellHeight != null" >
+        cell_height,
+      </if>
+      <if test="cellWidth != null" >
+        cell_width,
+      </if>
+      <if test="onlyRead != null" >
+        only_read,
+      </if>
+      <if test="tableHead != null" >
+        table_head,
+      </if>
+      <if test="hidden != null" >
+        hidden,
+      </if>
+      <if test="cellType != null" >
+        cell_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="excleTableStructureId != null" >
+        #{excleTableStructureId,jdbcType=BIGINT},
+      </if>
+      <if test="excleTableId != null" >
+        #{excleTableId,jdbcType=BIGINT},
+      </if>
+      <if test="startRow != null" >
+        #{startRow,jdbcType=INTEGER},
+      </if>
+      <if test="endRow != null" >
+        #{endRow,jdbcType=INTEGER},
+      </if>
+      <if test="startCol != null" >
+        #{startCol,jdbcType=INTEGER},
+      </if>
+      <if test="endCol != null" >
+        #{endCol,jdbcType=INTEGER},
+      </if>
+      <if test="cellMsg != null" >
+        #{cellMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="cellHeight != null" >
+        #{cellHeight,jdbcType=INTEGER},
+      </if>
+      <if test="cellWidth != null" >
+        #{cellWidth,jdbcType=INTEGER},
+      </if>
+      <if test="onlyRead != null" >
+        #{onlyRead,jdbcType=CHAR},
+      </if>
+      <if test="tableHead != null" >
+        #{tableHead,jdbcType=CHAR},
+      </if>
+      <if test="hidden != null" >
+        #{hidden,jdbcType=CHAR},
+      </if>
+      <if test="cellType != null" >
+        #{cellType,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.ExcleTableStructure" >
+    update excle_table_structure
+    <set >
+      <if test="excleTableId != null" >
+        excle_table_id = #{excleTableId,jdbcType=BIGINT},
+      </if>
+      <if test="startRow != null" >
+        start_row = #{startRow,jdbcType=INTEGER},
+      </if>
+      <if test="endRow != null" >
+        end_row = #{endRow,jdbcType=INTEGER},
+      </if>
+      <if test="startCol != null" >
+        start_col = #{startCol,jdbcType=INTEGER},
+      </if>
+      <if test="endCol != null" >
+        end_col = #{endCol,jdbcType=INTEGER},
+      </if>
+      <if test="cellMsg != null" >
+        cell_msg = #{cellMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="cellHeight != null" >
+        cell_height = #{cellHeight,jdbcType=INTEGER},
+      </if>
+      <if test="cellWidth != null" >
+        cell_width = #{cellWidth,jdbcType=INTEGER},
+      </if>
+      <if test="onlyRead != null" >
+        only_read = #{onlyRead,jdbcType=CHAR},
+      </if>
+      <if test="tableHead != null" >
+        table_head = #{tableHead,jdbcType=CHAR},
+      </if>
+      <if test="hidden != null" >
+        hidden = #{hidden,jdbcType=CHAR},
+      </if>
+      <if test="cellType != null" >
+        cell_type = #{cellType,jdbcType=CHAR},
+      </if>
+    </set>
+    where excle_table_structure_id = #{excleTableStructureId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.ExcleTableStructure" >
+    update excle_table_structure
+    set excle_table_id = #{excleTableId,jdbcType=BIGINT},
+    start_row = #{startRow,jdbcType=INTEGER},
+    end_row = #{endRow,jdbcType=INTEGER},
+    start_col = #{startCol,jdbcType=INTEGER},
+    end_col = #{endCol,jdbcType=INTEGER},
+    cell_msg = #{cellMsg,jdbcType=VARCHAR},
+    cell_height = #{cellHeight,jdbcType=INTEGER},
+    cell_width = #{cellWidth,jdbcType=INTEGER},
+    only_read = #{onlyRead,jdbcType=CHAR},
+    table_head = #{tableHead,jdbcType=CHAR},
+    hidden = #{hidden,jdbcType=CHAR},
+    cell_type = #{cellType,jdbcType=CHAR}
+    where excle_table_structure_id = #{excleTableStructureId,jdbcType=BIGINT}
+  </update>
+
+  <!--根据场站ID和对应excle表名称查询表结构-->
+  <select id="findExcleStruByStIdAndTableName" resultMap="BaseResultMap">
+    SELECT
+    ets.*
+    FROM
+    excle_table et
+    LEFT JOIN auth_excle_factory aef ON et.excle_table_id = aef.excle_table_id
+    LEFT JOIN station s ON s.factory_type_id = aef.factory_type_id
+    LEFT JOIN excle_table_structure ets ON et.excle_table_id = ets.excle_table_id
+    WHERE
+    s.station_id=#{stationId}
+    AND
+    et.excle_table_name=#{tableName}
+    ORDER BY ets.start_row,ets.start_col
+  </select>
+
+  <!--根据工艺ID集合 和表名称查询表结构信息-->
+  <select id="findExcleStruByFactoryTypeIdAndTableName" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT
+    ets.*
+    FROM
+    excle_table et
+    LEFT JOIN auth_excle_factory aef ON et.excle_table_id = aef.excle_table_id
+    LEFT JOIN excle_table_structure ets ON ets.excle_table_id = et.excle_table_id
+    WHERE
+    et.excle_table_name = #{excleTableName}
+    AND
+    aef.factory_type_id IN
+    <foreach collection="factoryTypeIds" item="item" index="index" separator="," open="(" close=")">
+      #{item}
+    </foreach>
+     ORDER BY ets.start_row,ets.start_col
+
+  </select>
+
+  <!--根据excle表列表ID查询excle表结构信息-->
+  <select id="findExcleStruByExcleTabId"  parameterType="java.lang.Long" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" />
+    FROM excle_table_structure
+    WHERE
+    excle_table_id=#{excleTableId};
+  </select>
+
+  <!--修改表结构-->
+  <insert id="updateTabStru" parameterType="java.util.List">
+    replace into excle_table_structure
+    <foreach collection="list" item="excleTableStructures" index="index">
+      <if test="index == 0">
+
+
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+          <if test="excleTableStructures.excleTableStructureId != null" >
+            excle_table_structure_id,
+          </if>
+          <if test="excleTableStructures.excleTableId != null" >
+            excle_table_id,
+          </if>
+          <if test="excleTableStructures.startRow != null" >
+            start_row,
+          </if>
+          <if test="excleTableStructures.endRow != null" >
+            end_row,
+          </if>
+          <if test="excleTableStructures.startCol != null" >
+            start_col,
+          </if>
+          <if test="excleTableStructures.endCol != null" >
+            end_col,
+          </if>
+          <if test="excleTableStructures.cellMsg != null" >
+            cell_msg,
+          </if>
+          <if test="excleTableStructures.cellHeight != null" >
+            cell_height,
+          </if>
+          <if test="excleTableStructures.cellWidth != null" >
+            cell_width,
+          </if>
+          <if test="excleTableStructures.onlyRead != null" >
+            only_read,
+          </if>
+          <if test="excleTableStructures.tableHead != null" >
+            table_head,
+          </if>
+          <if test="excleTableStructures.hidden != null" >
+            hidden,
+          </if>
+          <if test="excleTableStructures.cellType != null" >
+            cell_type,
+          </if>
+        </trim>
+      </if>
+    </foreach>
+
+    <foreach collection="list" item="item" index="index" open="values" separator=",">
+
+
+      <trim prefix="(" suffix=")" suffixOverrides="," >
+        <if test="item.excleTableStructureId != null" >
+          #{item.excleTableStructureId,jdbcType=BIGINT},
+        </if>
+        <if test="item.excleTableId != null" >
+          #{item.excleTableId,jdbcType=BIGINT},
+        </if>
+        <if test="item.startRow != null" >
+          #{item.startRow,jdbcType=INTEGER},
+        </if>
+        <if test="item.endRow != null" >
+          #{item.endRow,jdbcType=INTEGER},
+        </if>
+        <if test="item.startCol != null" >
+          #{item.startCol,jdbcType=INTEGER},
+        </if>
+        <if test="item.endCol != null" >
+          #{item.endCol,jdbcType=INTEGER},
+        </if>
+        <if test="item.cellMsg != null" >
+          #{item.cellMsg,jdbcType=VARCHAR},
+        </if>
+        <if test="item.cellHeight != null" >
+          #{item.cellHeight,jdbcType=INTEGER},
+        </if>
+        <if test="item.cellWidth != null" >
+          #{item.cellWidth,jdbcType=INTEGER},
+        </if>
+        <if test="item.onlyRead != null" >
+          #{item.onlyRead,jdbcType=CHAR},
+        </if>
+        <if test="item.tableHead != null" >
+          #{item.tableHead,jdbcType=CHAR},
+        </if>
+        <if test="item.hidden != null" >
+          #{item.hidden,jdbcType=CHAR},
+        </if>
+        <if test="item.cellType != null" >
+          #{item.cellType,jdbcType=CHAR},
+        </if>
+      </trim>
+    </foreach>
+  </insert>
+
+  <update id="updateTabStruById" parameterType="java.util.List">
+    <foreach collection="list" item="item" index="index" separator=";">
+      update
+      excle_table_structure
+      set
+      cell_msg = #{item.cellMsg,jdbcType=VARCHAR},
+      only_read = #{item.onlyRead,jdbcType=CHAR},
+      table_head = #{item.tableHead,jdbcType=CHAR},
+      cell_type = #{item.cellType,jdbcType=CHAR}
+      where
+      excle_table_structure_id = #{item.excleTableStructureId,jdbcType=BIGINT}
+    </foreach>
+  </update>
+
+  <!--根据excleTableId删除表结构信息-->
+  <delete id="deleteTabStruByExcleTableId" parameterType="java.lang.Long">
+    delete
+    from
+    excle_table_structure
+    where
+    excle_table_id = #{excleTableId}
+
+  </delete>
+</mapper>

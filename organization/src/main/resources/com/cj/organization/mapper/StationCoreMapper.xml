@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.organization.mapper.StationCoreMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.StationCore" >
+    <id column="station_core_id" property="stationCoreId" jdbcType="BIGINT" />
+    <result column="task_area_id" property="taskAreaId" jdbcType="BIGINT" />
+    <result column="factory_type_id" property="factoryTypeId" jdbcType="BIGINT" />
+    <result column="station_core_name" property="stationCoreName" jdbcType="VARCHAR" />
+    <result column="popedom_grade" property="popedomGrade" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    station_core_id, task_area_id, factory_type_id, station_core_name, popedom_grade
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from station_core
+    where station_core_id = #{stationCoreId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from station_core
+    where station_core_id = #{stationCoreId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.StationCore" >
+    insert into station_core (station_core_id, task_area_id, factory_type_id, 
+      station_core_name, popedom_grade)
+    values (#{stationCoreId,jdbcType=BIGINT}, #{taskAreaId,jdbcType=BIGINT}, #{factoryTypeId,jdbcType=BIGINT}, 
+      #{stationCoreName,jdbcType=VARCHAR}, #{popedomGrade,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.StationCore" >
+    insert into station_core
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="stationCoreId != null" >
+        station_core_id,
+      </if>
+      <if test="taskAreaId != null" >
+        task_area_id,
+      </if>
+      <if test="factoryTypeId != null" >
+        factory_type_id,
+      </if>
+      <if test="stationCoreName != null" >
+        station_core_name,
+      </if>
+      <if test="popedomGrade != null" >
+        popedom_grade,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="stationCoreId != null" >
+        #{stationCoreId,jdbcType=BIGINT},
+      </if>
+      <if test="taskAreaId != null" >
+        #{taskAreaId,jdbcType=BIGINT},
+      </if>
+      <if test="factoryTypeId != null" >
+        #{factoryTypeId,jdbcType=BIGINT},
+      </if>
+      <if test="stationCoreName != null" >
+        #{stationCoreName,jdbcType=VARCHAR},
+      </if>
+      <if test="popedomGrade != null" >
+        #{popedomGrade,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.StationCore" >
+    update station_core
+    <set >
+      <if test="taskAreaId != null" >
+        task_area_id = #{taskAreaId,jdbcType=BIGINT},
+      </if>
+      <if test="factoryTypeId != null" >
+        factory_type_id = #{factoryTypeId,jdbcType=BIGINT},
+      </if>
+      <if test="stationCoreName != null" >
+        station_core_name = #{stationCoreName,jdbcType=VARCHAR},
+      </if>
+      <if test="popedomGrade != null" >
+        popedom_grade = #{popedomGrade,jdbcType=CHAR},
+      </if>
+    </set>
+    where station_core_id = #{stationCoreId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.StationCore" >
+    update station_core
+    set task_area_id = #{taskAreaId,jdbcType=BIGINT},
+      factory_type_id = #{factoryTypeId,jdbcType=BIGINT},
+      station_core_name = #{stationCoreName,jdbcType=VARCHAR},
+      popedom_grade = #{popedomGrade,jdbcType=CHAR}
+    where station_core_id = #{stationCoreId,jdbcType=BIGINT}
+  </update>
+
+
+  <!--根据作业区id和中心站名称查重-->
+  <select id="findStationCoreByName" resultMap="BaseResultMap">
+    SELECT *
+    FROM station_core
+    WHERE task_area_id = #{id}
+          AND station_core_name = #{name}
+    LIMIT 1
+  </select>
+
+  <!--添加中心站信息 主键返回-->
+  <insert id="addStationCore" parameterType="com.cj.common.entity.StationCore" useGeneratedKeys="true" keyProperty="stationCoreId">
+    INSERT INTO station_core(task_area_id,station_core_name) VALUES (#{taskAreaId},#{stationCoreName})
+  </insert>
+
+  <!--修改中心站关联的 工艺分类id-->
+  <update id="updateFactoryTypeById">
+    UPDATE station_core SET factory_type_id = #{factoryTypeId}
+    WHERE station_core_id = #{popId}
+  </update>
+
+  <!--映射-->
+  <resultMap id="findStationCoreAndAdminMap" type="com.cj.organization.entity.RespStation">
+    <result column="factory_id" property="factoryId"/>
+    <result column="factory_name" property="factoryName"/>
+    <result column="task_area_id" property="taskAreaId"/>
+    <result column="task_area_name" property="taskAreaName"/>
+    <result column="station_core_id" property="stationCoreId"/>
+    <result column="station_core_name" property="stationCoreName"/>
+    <result column="admin_name" property="adminName"/>
+    <result column="full_name" property="fullName"/>
+  </resultMap>
+  <!--根据中心站id  查询中心站和联系人信息-->
+  <select id="findStationCoreAndAdmin" parameterType="java.lang.Long" resultMap="findStationCoreAndAdminMap">
+    select fbm.`factory_id`,fbm.`factory_name`,ta.`task_area_id`,
+      ta.`task_area_name`,sc.`station_core_id`,sc.`station_core_name`,a.`admin_name`,ai.`full_name`
+    from station_core sc
+      left join task_area ta on sc.`task_area_id` = ta.`task_area_id`
+      left join factory_basic_msg fbm on ta.`factory_id` = fbm.`factory_id`
+      left join auth_admin_popedom aap on sc.`station_core_id` = aap.`popedom_id`
+                                          and aap.`popedom_grade` = 4
+      left join admin a on aap.`admin_id` = a.`admin_id`
+      left join admin_info ai on aap.`admin_id` = ai.`admin_id`
+    where sc.`station_core_id` = #{stationCoreId}
+    limit 1
+  </select>
+
+</mapper>

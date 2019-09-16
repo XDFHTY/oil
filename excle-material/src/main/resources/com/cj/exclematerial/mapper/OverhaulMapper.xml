@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclematerial.mapper.OverhaulMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.Overhaul" >
+    <id column="overhaul_id" property="overhaulId" jdbcType="BIGINT" />
+    <result column="overhaul" property="overhaul" jdbcType="VARCHAR" />
+    <result column="overhaul_person" property="overhaulPerson" jdbcType="VARCHAR" />
+    <result column="overhaul_person_telphone" property="overhaulPersonTelphone" jdbcType="VARCHAR" />
+    <result column="overhaul_person_phone" property="overhaulPersonPhone" jdbcType="VARCHAR" />
+    <result column="factory_id" property="factoryId" jdbcType="BIGINT" />
+    <result column="table_year" property="tableYear" jdbcType="DATE" />
+    <result column="table_name" property="tableName" jdbcType="VARCHAR" />
+  </resultMap>
+
+
+  <resultMap id="ExcelResultMap" type="com.cj.exclematerial.pojo.OverhaulBo" >
+    <id column="overhaul_id" property="overhaulId" jdbcType="BIGINT" />
+    <result column="overhaul" property="overhaul" jdbcType="VARCHAR" />
+    <result column="overhaul_person" property="overhaulPerson" jdbcType="VARCHAR" />
+    <result column="overhaul_person_telphone" property="overhaulPersonTelphone" jdbcType="VARCHAR" />
+    <result column="overhaul_person_phone" property="overhaulPersonPhone" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    overhaul_id, overhaul, overhaul_person, overhaul_person_telphone, overhaul_person_phone, 
+    factory_id, table_year, table_name
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from overhaul
+    where overhaul_id = #{overhaulId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from overhaul
+    where overhaul_id = #{overhaulId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.Overhaul" >
+    insert into overhaul (overhaul_id, overhaul, overhaul_person, 
+      overhaul_person_telphone, overhaul_person_phone, 
+      factory_id, table_year, table_name
+      )
+    values (#{overhaulId,jdbcType=BIGINT}, #{overhaul,jdbcType=VARCHAR}, #{overhaulPerson,jdbcType=VARCHAR}, 
+      #{overhaulPersonTelphone,jdbcType=VARCHAR}, #{overhaulPersonPhone,jdbcType=VARCHAR},
+      #{factoryId,jdbcType=BIGINT}, #{tableYear,jdbcType=DATE}, #{tableName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.Overhaul" >
+    insert into overhaul
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="overhaulId != null" >
+        overhaul_id,
+      </if>
+      <if test="overhaul != null" >
+        overhaul,
+      </if>
+      <if test="overhaulPerson != null" >
+        overhaul_person,
+      </if>
+      <if test="overhaulPersonTelphone != null" >
+        overhaul_person_telphone,
+      </if>
+      <if test="overhaulPersonPhone != null" >
+        overhaul_person_phone,
+      </if>
+      <if test="factoryId != null" >
+        factory_id,
+      </if>
+      <if test="tableYear != null" >
+        table_year,
+      </if>
+      <if test="tableName != null" >
+        table_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="overhaulId != null" >
+        #{overhaulId,jdbcType=BIGINT},
+      </if>
+      <if test="overhaul != null" >
+        #{overhaul,jdbcType=VARCHAR},
+      </if>
+      <if test="overhaulPerson != null" >
+        #{overhaulPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="overhaulPersonTelphone != null" >
+        #{overhaulPersonTelphone,jdbcType=VARCHAR},
+      </if>
+      <if test="overhaulPersonPhone != null" >
+        #{overhaulPersonPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryId != null" >
+        #{factoryId,jdbcType=BIGINT},
+      </if>
+      <if test="tableYear != null" >
+        #{tableYear,jdbcType=DATE},
+      </if>
+      <if test="tableName != null" >
+        #{tableName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.Overhaul" >
+    update overhaul
+    <set >
+      <if test="overhaul != null" >
+        overhaul = #{overhaul,jdbcType=VARCHAR},
+      </if>
+      <if test="overhaulPerson != null" >
+        overhaul_person = #{overhaulPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="overhaulPersonTelphone != null" >
+        overhaul_person_telphone = #{overhaulPersonTelphone,jdbcType=VARCHAR},
+      </if>
+      <if test="overhaulPersonPhone != null" >
+        overhaul_person_phone = #{overhaulPersonPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryId != null" >
+        factory_id = #{factoryId,jdbcType=BIGINT},
+      </if>
+      <if test="tableYear != null" >
+        table_year = #{tableYear,jdbcType=DATE},
+      </if>
+      <if test="tableName != null" >
+        table_name = #{tableName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where overhaul_id = #{overhaulId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.Overhaul" >
+    update overhaul
+    set overhaul = #{overhaul,jdbcType=VARCHAR},
+      overhaul_person = #{overhaulPerson,jdbcType=VARCHAR},
+      overhaul_person_telphone = #{overhaulPersonTelphone,jdbcType=VARCHAR},
+      overhaul_person_phone = #{overhaulPersonPhone,jdbcType=VARCHAR},
+      factory_id = #{factoryId,jdbcType=BIGINT},
+      table_year = #{tableYear,jdbcType=DATE},
+      table_name = #{tableName,jdbcType=VARCHAR}
+    where overhaul_id = #{overhaulId,jdbcType=BIGINT}
+  </update>
+  <!--根据Query查询检修队-->
+  <select id="findByQuery" resultType="java.util.Map" parameterType="java.util.Map" >
+    select
+    overhaul_id overhaulId,
+    overhaul,
+    overhaul_person overhaulPerson,
+    overhaul_person_telphone overhaulPersonTelphone,
+    overhaul_person_phone overhaulPersonPhone,
+    factory_basic_msg.factory_id factoryId,
+    factory_basic_msg.factory_name factoryName
+    from overhaul
+    LEFT JOIN factory_basic_msg ON factory_basic_msg.factory_id=overhaul.factory_id
+    WHERE 1=1
+    <if test="datetime!=null">
+      AND YEAR (table_year)=#{datetime}
+    </if>
+    <if test="factoryId!=null">
+      AND factory_basic_msg.factory_id=#{factoryId}
+    </if>
+    <if test="taskAreaId!=null">
+      AND taskarea_id=#{taskAreaId}
+    </if>
+    <if test="stationId!=null">
+      AND station_id=#{stationId}
+    </if>
+
+  </select>
+
+  <!--根据Query查询检修队Excel-->
+  <select id="selectExcelOverhaul" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select
+    <include refid="Base_Column_List" />
+    from overhaul WHERE 1=1
+    <if test="datetime!=null">
+      AND YEAR (table_year)=#{datetime}
+    </if>
+    <if test="factoryId!=null">
+      AND factory_id=#{factoryId}
+    </if>
+    <if test="taskAreaId!=null">
+      AND taskarea_id=#{taskAreaId}
+    </if>
+    <if test="stationId!=null">
+      AND station_id=#{stationId}
+    </if>
+
+  </select>
+</mapper>

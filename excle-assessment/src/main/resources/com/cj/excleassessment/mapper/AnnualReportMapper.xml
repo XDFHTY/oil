@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.excleassessment.mapper.AnnualReportMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.AnnualReport" >
+    <id column="annual_report_id" property="annualReportId" jdbcType="BIGINT" />
+    <result column="branch_company_id" property="branchCompanyId" jdbcType="BIGINT" />
+    <result column="factory_id" property="factoryId" jdbcType="BIGINT" />
+    <result column="report_url" property="reportUrl" jdbcType="VARCHAR" />
+    <result column="report_name" property="reportName" jdbcType="VARCHAR" />
+    <result column="year" property="year" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="CHAR" />
+    <result column="operator_id" property="operatorId" jdbcType="BIGINT" />
+    <result column="report_state" property="reportState" jdbcType="CHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    annual_report_id, branch_company_id, factory_id, report_url, report_name, year, type, 
+    operator_id, report_state, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from annual_report
+    where annual_report_id = #{annualReportId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from annual_report
+    where annual_report_id = #{annualReportId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.AnnualReport" >
+    insert into annual_report (annual_report_id, branch_company_id, factory_id, 
+      report_url, report_name, year, 
+      type, operator_id, report_state, 
+      create_time, update_time)
+    values (#{annualReportId,jdbcType=BIGINT}, #{branchCompanyId,jdbcType=BIGINT}, #{factoryId,jdbcType=BIGINT}, 
+      #{reportUrl,jdbcType=VARCHAR}, #{reportName,jdbcType=VARCHAR}, #{year,jdbcType=VARCHAR}, 
+      #{type,jdbcType=CHAR}, #{operatorId,jdbcType=BIGINT}, #{reportState,jdbcType=CHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.AnnualReport" >
+    insert into annual_report
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="annualReportId != null" >
+        annual_report_id,
+      </if>
+      <if test="branchCompanyId != null" >
+        branch_company_id,
+      </if>
+      <if test="factoryId != null" >
+        factory_id,
+      </if>
+      <if test="reportUrl != null" >
+        report_url,
+      </if>
+      <if test="reportName != null" >
+        report_name,
+      </if>
+      <if test="year != null" >
+        year,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="operatorId != null" >
+        operator_id,
+      </if>
+      <if test="reportState != null" >
+        report_state,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="annualReportId != null" >
+        #{annualReportId,jdbcType=BIGINT},
+      </if>
+      <if test="branchCompanyId != null" >
+        #{branchCompanyId,jdbcType=BIGINT},
+      </if>
+      <if test="factoryId != null" >
+        #{factoryId,jdbcType=BIGINT},
+      </if>
+      <if test="reportUrl != null" >
+        #{reportUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="reportName != null" >
+        #{reportName,jdbcType=VARCHAR},
+      </if>
+      <if test="year != null" >
+        #{year,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=CHAR},
+      </if>
+      <if test="operatorId != null" >
+        #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="reportState != null" >
+        #{reportState,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.AnnualReport" >
+    update annual_report
+    <set >
+      <if test="branchCompanyId != null" >
+        branch_company_id = #{branchCompanyId,jdbcType=BIGINT},
+      </if>
+      <if test="factoryId != null" >
+        factory_id = #{factoryId,jdbcType=BIGINT},
+      </if>
+      <if test="reportUrl != null" >
+        report_url = #{reportUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="reportName != null" >
+        report_name = #{reportName,jdbcType=VARCHAR},
+      </if>
+      <if test="year != null" >
+        year = #{year,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=CHAR},
+      </if>
+      <if test="operatorId != null" >
+        operator_id = #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="reportState != null" >
+        report_state = #{reportState,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where annual_report_id = #{annualReportId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.AnnualReport" >
+    update annual_report
+    set branch_company_id = #{branchCompanyId,jdbcType=BIGINT},
+      factory_id = #{factoryId,jdbcType=BIGINT},
+      report_url = #{reportUrl,jdbcType=VARCHAR},
+      report_name = #{reportName,jdbcType=VARCHAR},
+      year = #{year,jdbcType=VARCHAR},
+      type = #{type,jdbcType=CHAR},
+      operator_id = #{operatorId,jdbcType=BIGINT},
+      report_state = #{reportState,jdbcType=CHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where annual_report_id = #{annualReportId,jdbcType=BIGINT}
+  </update>
+  
+  <!--根据admin查询分公司id-->
+  <select id="findBCIdByAdminId" parameterType="java.lang.Long" resultType="java.lang.Long">
+
+    SELECT bc.`branch_company_id`
+    FROM auth_admin_popedom aap
+      LEFT JOIN branch_company bc ON aap.`popedom_id` = bc.`branch_company_id`
+    WHERE aap.`admin_id` = #{adminId} AND aap.`popedom_grade` = 1
+  </select>
+
+  <!--根据年份和分公司id查询 当前分公司报告份数-->
+  <select id="findBCReportNumberByYear" resultType="java.lang.Integer">
+    SELECT COUNT(*)
+    FROM annual_report
+    WHERE branch_company_id = #{bcId}
+          AND `year` = #{year}
+          AND `type` = '1'
+          AND report_state = '1'
+  </select>
+
+  <!--添加一条数据-->
+  <select id="addRecord" parameterType="java.util.Map">
+    INSERT INTO annual_report
+    (branch_company_id,factory_id,report_url,report_name,`year`,`type`,operator_id,create_time) VALUES
+      (#{bcId},#{factoryId},#{url},#{name},#{year},#{type},#{adminId},#{nowDate})
+  </select>
+
+  <!--根据adminId查询气矿id-->
+  <select id="findFactoryIdByAdminId" parameterType="java.lang.Long" resultType="java.lang.Long">
+    SELECT fbm.`factory_id`
+    FROM auth_admin_popedom aap
+      LEFT JOIN factory_basic_msg fbm
+        ON aap.`popedom_id` = fbm.`factory_id`
+    WHERE aap.`admin_id` = #{adminId}
+          AND aap.`popedom_grade` = 2
+  </select>
+
+  <!--根据气矿id和年份查询报告份数-->
+  <select id="findFactoryNumberById" resultType="java.lang.Integer">
+    SELECT count(*)
+    FROM annual_report
+    WHERE factory_id = #{factoryId}
+          AND `year` = #{year}
+          AND `type` = '2'
+          AND report_state = '1'
+  </select>
+
+
+  <!--根据年份查询全部报告-->
+  <select id="getAllByYear" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT *
+    FROM annual_report
+    WHERE `year` = #{year}
+          AND report_state = '1'
+  </select>
+
+  <!--根据报告id查询报告-->
+  <select id="findReportById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    SELECT *
+    FROM annual_report
+    WHERE annual_report_id = #{annualReportId}
+          AND report_state = '1'
+  </select>
+
+</mapper>

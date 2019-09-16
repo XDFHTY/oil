@@ -1,0 +1,903 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.organization.mapper.AuthAdminPopedomMapper">
+    <resultMap id="BaseResultMap" type="com.cj.common.entity.AuthAdminPopedom">
+        <id column="auth_admin_popedom" property="authAdminPopedom" jdbcType="BIGINT"/>
+        <result column="admin_id" property="adminId" jdbcType="BIGINT"/>
+        <result column="popedom_id" property="popedomId" jdbcType="BIGINT"/>
+        <result column="popedom_grade" property="popedomGrade" jdbcType="CHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    auth_admin_popedom, admin_id, popedom_id, popedom_grade
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from auth_admin_popedom
+        where auth_admin_popedom = #{authAdminPopedom,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from auth_admin_popedom
+    where auth_admin_popedom = #{authAdminPopedom,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.cj.common.entity.AuthAdminPopedom">
+    insert into auth_admin_popedom (auth_admin_popedom, admin_id, popedom_id,
+                                    popedom_grade)
+    values (#{authAdminPopedom,jdbcType=BIGINT}, #{adminId,jdbcType=BIGINT}, #{popedomId,jdbcType=BIGINT},
+            #{popedomGrade,jdbcType=CHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.cj.common.entity.AuthAdminPopedom">
+        insert into auth_admin_popedom
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="authAdminPopedom != null">
+                auth_admin_popedom,
+            </if>
+            <if test="adminId != null">
+                admin_id,
+            </if>
+            <if test="popedomId != null">
+                popedom_id,
+            </if>
+            <if test="popedomGrade != null">
+                popedom_grade,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="authAdminPopedom != null">
+                #{authAdminPopedom,jdbcType=BIGINT},
+            </if>
+            <if test="adminId != null">
+                #{adminId,jdbcType=BIGINT},
+            </if>
+            <if test="popedomId != null">
+                #{popedomId,jdbcType=BIGINT},
+            </if>
+            <if test="popedomGrade != null">
+                #{popedomGrade,jdbcType=CHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.AuthAdminPopedom">
+        update auth_admin_popedom
+        <set>
+            <if test="adminId != null">
+                admin_id = #{adminId,jdbcType=BIGINT},
+            </if>
+            <if test="popedomId != null">
+                popedom_id = #{popedomId,jdbcType=BIGINT},
+            </if>
+            <if test="popedomGrade != null">
+                popedom_grade = #{popedomGrade,jdbcType=CHAR},
+            </if>
+        </set>
+        where auth_admin_popedom = #{authAdminPopedom,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.AuthAdminPopedom">
+    update auth_admin_popedom
+    set admin_id = #{adminId,jdbcType=BIGINT},
+      popedom_id = #{popedomId,jdbcType=BIGINT},
+      popedom_grade = #{popedomGrade,jdbcType=CHAR}
+    where auth_admin_popedom = #{authAdminPopedom,jdbcType=BIGINT}
+  </update>
+
+    <!--添加auth_admin_popedom表记录-->
+    <insert id="addRecord">
+    INSERT INTO auth_admin_popedom(admin_id,popedom_id,popedom_grade) VALUES(#{adminId},#{popedomId},#{i})
+  </insert>
+
+
+    <!--根据区域id 和辖区分类id 查询这个区域是否已经添加了管理员-->
+    <select id="findDataByPopedomId" resultMap="BaseResultMap">
+    select *
+    from auth_admin_popedom
+    where popedom_id = #{popId}
+          and popedom_grade = #{typeId}
+  </select>
+
+    <!--查询管理人账号和姓名-->
+    <select id="findAdminById" resultType="java.util.Map">
+    SELECT a.`admin_name`,ai.`full_name`
+    FROM auth_admin_popedom aap
+      LEFT JOIN admin a ON aap.`admin_id` = a.`admin_id`
+      LEFT JOIN admin_info ai ON aap.`admin_id` = ai.`admin_id`
+    WHERE popedom_id = #{popId}
+          AND popedom_grade = #{typeId}
+    LIMIT 1
+  </select>
+
+
+    <!--映射-->
+    <resultMap id="findAdminListByStationMap" type="com.cj.organization.entity.RespAdmin">
+        <result column="station_id" property="stationId"/>
+        <result column="station_name" property="stationName"/>
+        <result column="task_area_id" property="taskAreaId"/>
+        <result column="task_area_name" property="taskAreaName"/>
+        <result column="factory_id" property="factoryId"/>
+        <result column="factory_name" property="factoryName"/>
+        <result column="factory_type_name" property="factoryType"/>
+        <result column="admin_id" property="adminId"/>
+        <result column="admin_name" property="adminName"/>
+        <result column="full_name" property="fullName"/>
+        <result column="phone" property="phone"/>
+        <result column="role_name" property="roleName"/>
+    </resultMap>
+    <!--根据联系人姓名和角色等级 模糊查询 账号列表-->
+    <select id="findAdminListByStation" resultMap="findAdminListByStationMap">
+        select a.`admin_id`,a.`admin_name`,ai.`full_name`,ai.`phone`,ar.`role_name`,
+        s.`station_id`,s.`station_name`,ta.`task_area_id`,ta.`task_area_name`,
+        fbm.`factory_id`,fbm.`factory_name`,ft.`factory_type_name`
+        FROM admin a
+        LEFT JOIN admin_info ai ON a.`admin_id` = ai.`admin_id`
+        LEFT JOIN auth_customer_role acr ON acr.`customer_id` = a.`admin_id`
+        LEFT JOIN auth_role ar ON ar.`role_id` = acr.`role_id`
+        left join auth_admin_popedom aap on a.`admin_id` = aap.`admin_id` and aap.`popedom_grade` = 4
+        left join station s on aap.`popedom_id` = s.`station_id`
+        left join task_area ta on s.`task_area_id` = ta.`task_area_id`
+        left join factory_basic_msg fbm on ta.`factory_id` = fbm.`factory_id`
+        left join factory_type ft on s.`factory_type_id` = ft.`factory_type_id`
+        where ar.`role_description_name` = #{roleName}
+        <if test="name != null">
+            and ai.`full_name` like CONCAT('%',#{name},'%')
+        </if>
+    </select>
+
+    <!--根据管理员id查询是否分配了机构-->
+    <select id="findDataByAdminId" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select *
+    from auth_admin_popedom
+    where admin_id = #{adminId}
+    limit 1
+  </select>
+
+    <!--删除记录-->
+    <delete id="deleteRecord">
+    delete from auth_admin_popedom
+    where admin_id = #{adminId}
+          and popedom_id = #{popId}
+          and popedom_grade = #{popGrade}
+  </delete>
+
+
+    <!--根据场站id 和 区域id 查询是否绑定有管理员-->
+    <select id="findAdminByStationId" resultMap="BaseResultMap">
+    SELECT *
+    FROM auth_admin_popedom
+    WHERE popedom_id = #{popId}
+          AND popedom_grade = #{popGrade}
+          AND admin_id = #{adminId}
+    LIMIT 1
+  </select>
+
+
+    <!--根据场站id 修改管理员id-->
+    <update id="updateAdminIdByStationId">
+    update auth_admin_popedom set admin_id = #{adminId}
+    where auth_admin_popedom = #{popId}
+          and popedom_grade = #{popGrade}
+  </update>
+
+    <!--添加账号姓名 手机号-->
+    <insert id="insertAdminInfo" parameterType="java.util.Map">
+    INSERT INTO admin_info (admin_id,full_name,phone)
+    VALUES (#{adminId},#{fullName},#{phone})
+  </insert>
+
+
+    <!--修改角色-->
+    <update id="updateAdminAndRole">
+    UPDATE auth_customer_role
+    SET role_id = #{roleId}
+    WHERE customer_id = #{adminId}
+  </update>
+
+
+    <!--根据adminId 查询账号等级-->
+    <select id="findRoleByAdminId" resultType="java.lang.String" parameterType="java.lang.Integer">
+    select ar.`role_description_name`
+    from auth_customer_role acr
+      left join auth_role ar on acr.`role_id` = ar.`role_id`
+    where acr.`customer_id` = #{adminId}
+  </select>
+
+    <resultMap id="findAdminListByAreaMap" type="com.cj.organization.entity.RespAdmin">
+        <result column="task_area_id" property="taskAreaId"/>
+        <result column="task_area_name" property="taskAreaName"/>
+        <result column="factory_id" property="factoryId"/>
+        <result column="factory_name" property="factoryName"/>
+        <result column="admin_id" property="adminId"/>
+        <result column="admin_name" property="adminName"/>
+        <result column="full_name" property="fullName"/>
+        <result column="phone" property="phone"/>
+        <result column="role_name" property="roleName"/>
+    </resultMap>
+    <select id="findAdminListByArea" resultMap="findAdminListByAreaMap">
+        SELECT a.`admin_id`,a.`admin_name`,ai.`full_name`,ai.`phone`,ar.`role_name`,
+        ta.`task_area_id`,ta.`task_area_name`,
+        fbm.`factory_id`,fbm.`factory_name`
+        FROM admin a
+        LEFT JOIN admin_info ai ON a.`admin_id` = ai.`admin_id`
+        LEFT JOIN auth_customer_role acr ON acr.`customer_id` = a.`admin_id`
+        LEFT JOIN auth_role ar ON ar.`role_id` = acr.`role_id`
+        LEFT JOIN auth_admin_popedom aap ON a.`admin_id` = aap.`admin_id` AND aap.`popedom_grade` = 3
+        LEFT JOIN task_area ta ON aap.`popedom_id` = ta.`task_area_id`
+        LEFT JOIN factory_basic_msg fbm ON ta.`factory_id` = fbm.`factory_id`
+        where ar.`role_description_name` = #{roleName}
+        <if test="name != null">
+            and ai.`full_name` like CONCAT('%',#{name},'%')
+        </if>
+    </select>
+
+    <resultMap id="findAdminListByFactoryMap" type="com.cj.organization.entity.RespAdmin">
+        <result column="factory_id" property="factoryId"/>
+        <result column="factory_name" property="factoryName"/>
+        <result column="admin_id" property="adminId"/>
+        <result column="admin_name" property="adminName"/>
+        <result column="full_name" property="fullName"/>
+        <result column="phone" property="phone"/>
+        <result column="role_name" property="roleName"/>
+    </resultMap>
+    <select id="findAdminListByFactory" resultMap="findAdminListByFactoryMap">
+        SELECT a.`admin_id`,a.`admin_name`,ai.`full_name`,ai.`phone`,ar.`role_name`,
+        fbm.`factory_id`,fbm.`factory_name`
+        FROM admin a
+        LEFT JOIN admin_info ai ON a.`admin_id` = ai.`admin_id`
+        LEFT JOIN auth_customer_role acr ON acr.`customer_id` = a.`admin_id`
+        LEFT JOIN auth_role ar ON ar.`role_id` = acr.`role_id`
+        LEFT JOIN auth_admin_popedom aap ON a.`admin_id` = aap.`admin_id` AND aap.`popedom_grade` = 2
+        LEFT JOIN factory_basic_msg fbm ON aap.`popedom_id` = fbm.`factory_id`
+        where ar.`role_description_name` = #{roleName}
+        <if test="name != null">
+            and ai.`full_name` like CONCAT('%',#{name},'%')
+        </if>
+    </select>
+
+
+    <!--修改adminInfo的信息-->
+    <update id="updateAdminInfoById" parameterType="java.util.Map">
+    UPDATE admin_info
+    SET full_name = #{fullName}
+                    , phone = #{phone}
+    WHERE admin_id = #{adminId}
+  </update>
+
+    <!--移除管理员关联机构记录-->
+    <delete id="deleteRecordByAdminIdAndPopId">
+        DELETE FROM auth_admin_popedom
+        WHERE admin_id = #{adminId}
+        <if test="stationId != null">
+            AND popedom_id = #{stationId}
+            AND popedom_grade = 4
+        </if>
+    </delete>
+
+
+    <resultMap id="findAdminByRoleIdMap" type="com.cj.organization.entity.RespAdmin">
+        <result column="admin_id" property="adminId"/>
+        <result column="admin_name" property="adminName"/>
+        <result column="full_name" property="fullName"/>
+        <result column="phone" property="phone"/>
+    </resultMap>
+    <!--根据账号等级 查询未绑定机构的账号  模糊条件 姓名-->
+    <select id="findAdminByRoleId" resultMap="findAdminByRoleIdMap">
+        SELECT a.`admin_id`,a.`admin_name`,ai.`full_name`,ai.`phone`
+        FROM admin a
+        LEFT JOIN admin_info ai ON a.`admin_id` = ai.`admin_id`
+        LEFT JOIN auth_customer_role acr ON a.`admin_id` = acr.`customer_id`
+        WHERE acr.role_id IN
+        <foreach collection="list" item="i" open="(" close=")" separator=",">
+            #{i}
+        </foreach>
+        AND a.`admin_id` NOT IN (
+        SELECT aap.admin_id FROM auth_admin_popedom aap
+        )
+        AND a.`admin_state` = '1'
+        <if test="name != null">
+            AND ai.`full_name` LIKE CONCAT('%',#{name},'%')
+        </if>
+
+    </select>
+
+
+    <!--查询 机构有几个管理人-->
+    <select id="findPopCountById" resultType="java.lang.Integer">
+    SELECT COUNT(*)
+    FROM auth_admin_popedom
+    WHERE popedom_id = #{popId}
+          AND popedom_grade = #{popType}
+  </select>
+
+
+    <!--根据场站id 查询场站名称-->
+    <select id="findStationNameById" resultType="java.lang.String" parameterType="java.lang.Integer">
+    SELECT station_name
+    FROM station
+    WHERE station_id = #{stationId}
+    LIMIT 1
+  </select>
+
+    <!--根据作业区id  查询作业区名称-->
+    <select id="findAreaNameById" resultType="java.lang.String" parameterType="java.lang.Integer">
+    SELECT task_area_name
+    FROM task_area
+    WHERE task_area_id = #{areaId}
+    LIMIT 1
+  </select>
+
+
+    <!--根据气矿id 查询气矿名称-->
+    <select id="findFactoryNameById" resultType="java.lang.String" parameterType="java.lang.Integer">
+    SELECT factory_name
+    FROM factory_basic_msg
+    WHERE factory_id = #{factoryId}
+    LIMIT 1
+  </select>
+
+    <!--根据管理员id 查询机构Id-->
+    <select id="findPopIdByAdminId" resultType="java.lang.Long">
+    SELECT popedom_id
+    FROM auth_admin_popedom
+    WHERE admin_id = #{adminId}
+          AND popedom_grade = #{type}
+  </select>
+
+
+    <resultMap id="findFactoryTypeListMap" type="com.cj.common.entity.FactoryType">
+        <result column="factory_type_id" property="factoryTypeId"/>
+        <result column="factory_type_name" property="factoryTypeName"/>
+        <result column="factory_type" property="factoryType"/>
+    </resultMap>
+    <!--查询所有工艺分类-->
+    <select id="findFactoryTypeList" resultMap="findFactoryTypeListMap">
+    SELECT *
+    FROM factory_type ft
+    WHERE
+    ft.factory_type_id > 0
+  </select>
+
+    <!--映射-->
+    <resultMap id="findAdminByOrganMap" type="com.cj.organization.entity.AdminAndOrganInfo">
+        <result column="admin_id" property="adminId"/>
+        <result column="admin_name" property="adminName"/>
+        <result column="role_id" property="roleId"/>
+        <result column="role_name" property="roleName"/>
+        <result column="popedom_grade" property="popedomGrade"/>
+        <result column="full_name" property="fullName"/>
+        <result column="phone" property="phone"/>
+        <result column="b1_id" property="b1Id"/>
+        <result column="b1_name" property="b1Name"/>
+        <result column="f1_id" property="f1Id"/>
+        <result column="f1_name" property="f1Name"/>
+        <result column="t1_id" property="t1Id"/>
+        <result column="t1_name" property="t1Name"/>
+        <result column="s1_id" property="s1Id"/>
+        <result column="s1_name" property="s1Name"/>
+        <result column="b2_id" property="b2Id"/>
+        <result column="b2_name" property="b2Name"/>
+        <result column="f2_id" property="f2Id"/>
+        <result column="f2_name" property="f2Name"/>
+        <result column="t2_id" property="t2Id"/>
+        <result column="t2_name" property="t2Name"/>
+        <result column="b3_id" property="b3Id"/>
+        <result column="b3_name" property="b3Name"/>
+        <result column="f3_id" property="f3Id"/>
+        <result column="f3_name" property="f3Name"/>
+        <result column="b4_id" property="b4Id"/>
+        <result column="b4_name" property="b4Name"/>
+        <result column="factory_type_id" property="factoryTypeId"/>
+        <result column="factory_type_name" property="factoryTypeName"/>
+    </resultMap>
+    <!--查询账号对应组织机构信息-->
+    <select id="findAdminByOrgan" parameterType="java.util.Map"
+            resultMap="com.cj.organization.mapper.AuthAdminPopedomMapper.findAdminByOrganMap,com.cj.common.mapper.PublicMapper.PagerTotal">
+        SELECT
+        SQL_CALC_FOUND_ROWS
+        aaa.*
+        FROM
+        (
+        SELECT
+        a.admin_id,a.admin_name,a.role_id,a.role_name,a.popedom_grade,
+        ai.`full_name`,ai.`phone`,
+
+        ss.`branch_company_id` AS b1_id,ss.`branch_company_name` AS b1_name,
+        ss.`factory_id` AS f1_id,ss.`factory_name` AS f1_name,
+        ss.task_area_id AS t1_id,ss.task_area_name AS t1_name,
+        ss.`station_id` AS s1_id,ss.`station_name` AS s1_name,
+        ss.`factory_type_id`,ss.`factory_type_name`,
+
+        ts.`branch_company_id` AS b2_id,ts.`branch_company_name` AS b2_name,
+        ts.`factory_id` AS f2_id,ts.`factory_name` AS f2_name,
+        ts.task_area_id AS t2_id,ts.task_area_name AS t2_name,
+
+        fs.`branch_company_id` AS b3_id,fs.`branch_company_name` AS b3_name,
+        fs.`factory_id` AS f3_id,fs.`factory_name` AS f3_name,
+
+        bs.`branch_company_id` AS b4_id,bs.`branch_company_name` AS b4_name
+
+        FROM
+        (
+        SELECT
+        a.admin_id,a.admin_name,ar.role_id,ar.`role_name`,aap.`popedom_grade`,
+
+        bc.`branch_company_id`,
+        fbm.`factory_id`,
+        ta.task_area_id,
+        s.`station_id`
+        FROM
+        admin a
+
+        LEFT JOIN auth_admin_popedom aap ON a.`admin_id` = aap.`admin_id`
+        LEFT JOIN branch_company bc ON aap.`popedom_id` = bc.`branch_company_id` AND aap.`popedom_grade` = '1'
+        LEFT JOIN factory_basic_msg fbm ON aap.`popedom_id` = fbm.`factory_id` AND aap.`popedom_grade` = '2'
+        LEFT JOIN task_area ta ON aap.`popedom_id` = ta.`task_area_id` AND aap.`popedom_grade` = '3'
+        LEFT JOIN station s ON aap.`popedom_id` = s.`station_id` AND aap.`popedom_grade` = '4'
+        LEFT JOIN auth_customer_role acr ON a.`admin_id` = acr.`customer_id`
+        LEFT JOIN auth_role ar ON acr.`role_id` = ar.`role_id`
+        WHERE a.`admin_state` = '1'
+        ) AS a
+        LEFT JOIN
+        (
+        SELECT
+        bc.`branch_company_id`,bc.`branch_company_name`,
+        fbm.`factory_id`,fbm.`factory_name`,
+        ta.`task_area_id`,ta.`task_area_name`,
+        s.`station_id`,s.`station_name`,
+        ft.`factory_type_id`,ft.`factory_type_name`
+        FROM
+        branch_company bc
+        LEFT JOIN factory_basic_msg fbm ON fbm.`branch_company_id` = bc.`branch_company_id`
+        LEFT JOIN task_area ta ON ta.`factory_id` = fbm.`factory_id`
+        LEFT JOIN station s ON s.`task_area_id` = ta.`task_area_id`
+        LEFT JOIN factory_type ft ON s.`factory_type_id` = ft.`factory_type_id`
+        ) AS ss ON ss.station_id = a.station_id
+
+        LEFT JOIN
+        (
+        SELECT
+        bc.`branch_company_id`,bc.`branch_company_name`,
+        fbm.`factory_id`,fbm.`factory_name`,
+        ta.`task_area_id`,ta.`task_area_name`
+        FROM
+        branch_company bc
+        LEFT JOIN factory_basic_msg fbm ON fbm.`branch_company_id` = bc.`branch_company_id`
+        LEFT JOIN task_area ta ON ta.`factory_id` = fbm.`factory_id`
+
+
+        ) AS ts ON ts.task_area_id = a.task_area_id
+
+        LEFT JOIN (
+        SELECT
+        bc.`branch_company_id`,bc.`branch_company_name`,
+        fbm.`factory_id`,fbm.`factory_name`
+        FROM
+        branch_company bc
+        LEFT JOIN factory_basic_msg fbm ON fbm.`branch_company_id` = bc.`branch_company_id`
+
+
+        ) fs ON fs.factory_id = a.factory_id
+
+        LEFT JOIN
+        (
+        SELECT
+        bc.`branch_company_id`,bc.`branch_company_name`
+        FROM
+        branch_company bc
+
+        ) AS bs ON bs.branch_company_id = a.branch_company_id
+
+        LEFT JOIN admin_info ai ON a.admin_id = ai.`admin_id`
+
+        WHERE 1=1
+
+        <if test="stationId != null">
+            AND ss.`station_id` = #{stationId}
+        </if>
+        <if test="taskAreaId != null">
+            AND ss.task_area_id = #{taskAreaId}
+            OR ts.task_area_id = #{taskAreaId}
+        </if>
+        <if test="factoryId != null">
+            AND ss.`factory_id` = #{factoryId}
+            OR ts.`factory_id` = #{factoryId}
+            OR fs.`factory_id` = #{factoryId}
+        </if>
+        OR popedom_grade IS NULL
+        ORDER BY a.popedom_grade IS NULL,a.`popedom_grade` ASC
+        ) AS aaa
+        WHERE 1 = 1
+        <if test="name != null">
+            AND aaa.full_name LIKE CONCAT('%',#{name},'%')
+        </if>
+        limit #{minRow},#{maxRow};
+        SELECT FOUND_ROWS() AS total;
+    </select>
+
+    <!--
+      <resultMap id="findOrganInfoMap" type="com.cj.organization.entity.OrganizationIndo">
+        <collection property="bcList" javaType="java.util.ArrayList" ofType="com.cj.organization.entity.BranchCompanyAndAdmin">
+          <result column="bs_bcId" property="branchCompanyId"/>
+          <result column="bs_bcName" property="branchCompanyName"/>
+          <result column="bs_adminId" property="adminId"/>
+          <result column="bs_adminName" property="adminName"/>
+        </collection>
+        <collection property="factoryList" javaType="java.util.ArrayList" ofType="com.cj.organization.entity.FactoryAndAdmin">
+          <result column="fs_factoryId" property="factoryId"/>
+          <result column="fs_factoryName" property="factoryName"/>
+          <result column="fs_adminId" property="adminId"/>
+          <result column="fs_adminName" property="adminName"/>
+          <collection property="taskAreaList" javaType="java.util.ArrayList"  ofType="com.cj.organization.entity.TaskAreaAndAdmin">
+            <result column="ts_taskAreaId" property="taskAreaId"/>
+            <result column="ts_taskAreaName" property="taskAreaName"/>
+            <result column="ts_adminId" property="adminId"/>
+            <result column="ts_adminName" property="adminName"/>
+            <collection property="stationList"javaType="java.util.ArrayList"  ofType="com.cj.organization.entity.StationAndAdmin">
+              <result column="ss_stationId" property="stationId"/>
+              <result column="ss_stationName" property="stationName"/>
+              <result column="ss_adminId" property="adminId"/>
+              <result column="ss_adminName" property="adminName"/>
+            </collection>
+          </collection>
+        </collection>
+
+      </resultMap>-->
+
+
+    <resultMap id="findOrginInfoMap2" type="com.cj.organization.entity.OrganInfo">
+        <result column="bs_bcId" property="oId"></result>
+        <result column="bs_bcName" property="oName"></result>
+        <collection property="adminAndInfos" javaType="java.util.ArrayList"
+                    ofType="com.cj.organization.entity.AdminAndInfo">
+            <result column="bs_adminId" property="adminId"></result>
+            <result column="bs_adminName" property="adminName"></result>
+        </collection>
+        <collection property="organInfos" ofType="com.cj.organization.entity.OrganInfo">
+            <result column="fs_factoryId" property="oId"></result>
+            <result column="fs_factoryName" property="oName"></result>
+            <collection property="adminAndInfos" javaType="java.util.ArrayList"
+                        ofType="com.cj.organization.entity.AdminAndInfo">
+                <result column="fs_adminId" property="adminId"></result>
+                <result column="fs_adminName" property="adminName"></result>
+            </collection>
+            <collection property="organInfos" ofType="com.cj.organization.entity.OrganInfo">
+                <result column="ts_taskAreaId" property="oId"></result>
+                <result column="ts_taskAreaName" property="oName"></result>
+                <collection property="adminAndInfos" javaType="java.util.ArrayList"
+                            ofType="com.cj.organization.entity.AdminAndInfo">
+                    <result column="ts_adminId" property="adminId"></result>
+                    <result column="ts_adminName" property="adminName"></result>
+                </collection>
+                <collection property="organInfos" ofType="com.cj.organization.entity.OrganInfo">
+                    <result column="ss_stationId" property="oId"></result>
+                    <result column="ss_stationName" property="oName"></result>
+                    <collection property="adminAndInfos" javaType="java.util.ArrayList"
+                                ofType="com.cj.organization.entity.AdminAndInfo">
+                        <result column="ss_adminId" property="adminId"></result>
+                        <result column="ss_adminName" property="adminName"></result>
+                    </collection>
+                </collection>
+            </collection>
+        </collection>
+    </resultMap>
+    <!--查询组织机构和账号-->
+    <select id="findOrganInfo" parameterType="java.util.Map" resultMap="findOrginInfoMap2">
+        SELECT
+        bs.branch_company_id AS bs_bcId,
+        bs.branch_company_name AS bs_bcName,
+        bs.admin_id AS bs_adminId,
+        bs.admin_name AS bs_adminName,
+        fs.factory_id AS fs_factoryId,
+        fs.factory_name AS fs_factoryName,
+        fs.admin_id AS fs_adminId,
+        fs.admin_name AS fs_adminName,
+        ts.`task_area_id` AS ts_taskAreaId,
+        ts.`task_area_name` AS ts_taskAreaName,
+        ts.`admin_id` AS ts_adminId,
+        ts.admin_name AS ts_adminName
+        <if test="taskAreaId != null">
+            ,
+            ss.`station_id` AS ss_stationId,
+            ss.`station_name` AS ss_stationName,
+            ss.`admin_id` AS ss_adminId,
+            ss.admin_name AS ss_adminName
+        </if>
+
+        FROM
+        (
+        SELECT
+        bc.`branch_company_id`,
+        bc.`branch_company_name`,
+        (
+        CASE
+        WHEN
+        <choose>
+            <when test="factoryId != null">
+                1= 1
+            </when>
+            <otherwise>
+                1 = 2
+            </otherwise>
+        </choose>
+        THEN a.`admin_id` = 0
+        WHEN
+        <choose>
+            <when test="factoryId == null ">
+                1 = 1
+            </when>
+            <otherwise>
+                1 = 2
+            </otherwise>
+        </choose>
+        THEN a.`admin_id`
+        END
+        ) AS admin_id,
+
+
+        (
+        CASE
+        WHEN
+        <choose>
+            <when test="factoryId != null">
+                1= 1
+            </when>
+            <otherwise>
+                1 = 2
+            </otherwise>
+        </choose>
+        THEN a.`admin_name` = NULL
+        WHEN
+        <choose>
+            <when test="factoryId == null ">
+                1 = 1
+            </when>
+            <otherwise>
+                1 = 2
+            </otherwise>
+        </choose>
+        THEN a.`admin_name`
+        END
+        ) AS admin_name
+
+        FROM
+        branch_company bc
+        LEFT JOIN auth_admin_popedom aap
+        ON aap.`popedom_id` = bc.`branch_company_id`
+        AND aap.`popedom_grade` = 1
+        LEFT JOIN admin a
+        ON aap.`admin_id` = a.`admin_id`) AS bs
+        LEFT JOIN
+        (SELECT
+        bc.`branch_company_id`,
+        bc.`branch_company_name`,
+        fbm.`factory_id`,
+        fbm.`factory_name`,
+        (
+        CASE
+        WHEN
+        <choose>
+            <when test="taskAreaId != null">
+                1 = 1
+            </when>
+            <otherwise>
+                1 = 2
+            </otherwise>
+        </choose>
+        THEN a.`admin_id` = 0
+        WHEN
+        <choose>
+            <when test="taskAreaId == null">
+                1=1
+            </when>
+            <otherwise>
+                1=2
+            </otherwise>
+        </choose>
+        THEN a.`admin_id`
+        END
+        ) AS admin_id,
+
+        (
+        CASE
+        WHEN
+        <choose>
+            <when test="taskAreaId != null">
+                1 = 1
+            </when>
+            <otherwise>
+                1 = 2
+            </otherwise>
+        </choose>
+        THEN a.`admin_name` = NULL
+        WHEN
+        <choose>
+            <when test="taskAreaId == null">
+                1=1
+            </when>
+            <otherwise>
+                1=2
+            </otherwise>
+        </choose>
+        THEN a.`admin_name`
+        END
+        ) AS admin_name
+        FROM
+        branch_company bc
+        LEFT JOIN factory_basic_msg fbm
+        ON fbm.`branch_company_id` = bc.`branch_company_id`
+        LEFT JOIN auth_admin_popedom aap
+        ON aap.`popedom_id` = fbm.`factory_id`
+        AND aap.`popedom_grade` = 2
+        LEFT JOIN admin a
+        ON aap.`admin_id` = a.`admin_id`) AS fs
+        ON bs.branch_company_id = fs.branch_company_id
+        LEFT JOIN
+        (SELECT
+        bc.`branch_company_id`,
+        bc.`branch_company_name`,
+        fbm.`factory_id`,
+        fbm.`factory_name`,
+        ta.`task_area_id`,
+        ta.`task_area_name`,
+
+        (
+        CASE
+        WHEN
+        <choose>
+            <when test="stationId != null">
+                1=1
+            </when>
+            <otherwise>
+                1=2
+            </otherwise>
+        </choose>
+        THEN a.`admin_id` = 0
+        WHEN
+        <choose>
+            <when test="stationId == null">
+                1=1
+            </when>
+            <otherwise>
+                1=2
+            </otherwise>
+        </choose>
+        THEN a.`admin_id`
+        END
+        ) AS admin_id,
+
+
+        (
+        CASE
+        WHEN
+        <choose>
+            <when test="stationId != null">
+                1=1
+            </when>
+            <otherwise>
+                1=2
+            </otherwise>
+        </choose>
+        THEN a.`admin_name` = NULL
+        WHEN
+        <choose>
+            <when test="stationId == null">
+                1=1
+            </when>
+            <otherwise>
+                1=2
+            </otherwise>
+        </choose>
+        THEN a.`admin_name`
+        END
+        ) AS admin_name
+        FROM
+        branch_company bc
+        LEFT JOIN factory_basic_msg fbm
+        ON fbm.`branch_company_id` = bc.`branch_company_id`
+        LEFT JOIN task_area ta
+        ON ta.`factory_id` = fbm.`factory_id`
+        LEFT JOIN auth_admin_popedom aap
+        ON aap.`popedom_id` = ta.`task_area_id`
+        AND aap.`popedom_grade` = 3
+        LEFT JOIN admin a
+        ON aap.`admin_id` = a.`admin_id`) AS ts
+        ON fs.factory_id = ts.factory_id
+
+        <if test="taskAreaId != null">
+
+
+            LEFT JOIN
+            (
+            SELECT
+            bc.`branch_company_id`,
+            bc.`branch_company_name`,
+            fbm.`factory_id`,
+            fbm.`factory_name`,
+            ta.`task_area_id`,
+            ta.`task_area_name`,
+            s.`station_id`,
+            s.`station_name`,
+            a.`admin_id`,
+            a.admin_name
+            FROM
+            branch_company bc
+            LEFT JOIN factory_basic_msg fbm
+            ON fbm.`branch_company_id` = bc.`branch_company_id`
+            LEFT JOIN task_area ta
+            ON ta.`factory_id` = fbm.`factory_id`
+            LEFT JOIN station s
+            ON s.`task_area_id` = ta.`task_area_id`
+            LEFT JOIN auth_admin_popedom aap
+            ON aap.`popedom_id` = s.`station_id`
+            AND aap.`popedom_grade` = 4
+            LEFT JOIN admin a
+            ON aap.`admin_id` = a.`admin_id`
+            ) AS ss
+            ON ss.task_area_id = ts.task_area_id
+        </if>
+        WHERE
+        1=1
+        <if test="factoryId != null">
+            and fs.factory_id = #{factoryId}
+        </if>
+        <if test="taskAreaId != null">
+            and ts.`task_area_id` = #{taskAreaId}
+        </if>
+        <if test="taskAreaId != null and stationId != null">
+            and ss.station_id = #{stationId}
+        </if>
+    </select>
+
+    <!--查询管理员姓名-->
+    <select id="findFullNameById" resultType="java.lang.String" parameterType="java.lang.Long">
+    select full_name
+    from admin_info
+    where admin_id = #{adminId}
+  </select>
+
+
+    <!--查询此作业区下 所有场站级账号-->
+    <select id="findAdminByTaskAreaId"  resultMap="findAdminByRoleIdMap" parameterType="java.lang.Integer">
+        SELECT
+            DISTINCT(
+            a.admin_id),
+            a.`admin_name`,
+            ai.`full_name`,
+            ai.`phone`
+        FROM
+            admin a
+            LEFT JOIN admin_info ai
+                ON a.`admin_id` = ai.admin_id
+            LEFT JOIN auth_admin_popedom aap
+                ON a.`admin_id` = aap.`admin_id`
+        WHERE aap.`popedom_grade` = '4'
+              AND aap.`popedom_id` IN
+                  (SELECT
+                       station_id
+                   FROM
+                       station
+                   WHERE task_area_id = #{areaId})
+    </select>
+
+
+    <!--根据adminId查询角色id-->
+    <select id="findRoleIdByAdminId" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT role_id
+        FROM auth_customer_role
+        WHERE customer_id = #{adminId1}
+    </select>
+
+    <!--根据场站id查询工艺分类名称-->
+    <select id="findFactoryNameByStationId" resultType="java.lang.String" parameterType="java.lang.Long">
+        SELECT ft.`factory_type_name`
+        FROM station s
+            LEFT JOIN factory_type ft ON s.`factory_type_id` = ft.`factory_type_id`
+        WHERE	s.`station_id` = #{stationId}
+    </select>
+
+    <!--查询adminInfo表中是否存在信息-->
+    <select id="findAdminInfoById" resultType="java.lang.Integer" parameterType="java.util.Map">
+        SELECT COUNT(*)
+        FROM admin_info
+        WHERE admin_id = #{adminId}
+    </select>
+
+
+</mapper>

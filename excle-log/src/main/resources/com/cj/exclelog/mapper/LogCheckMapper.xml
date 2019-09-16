@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclelog.mapper.LogCheckMapper" >
+    <resultMap id="BaseResultMap" type="com.cj.common.entity.LogCheck" >
+        <id column="log_check_id" property="logCheckId" jdbcType="BIGINT" />
+        <result column="factory_id" property="factoryId" jdbcType="BIGINT" />
+        <result column="factory_name" property="factoryName" jdbcType="BIGINT" />
+        <result column="task_area_id" property="taskAreaId" jdbcType="BIGINT" />
+        <result column="task_area_name" property="taskAreaName" jdbcType="BIGINT" />
+        <result column="station_id" property="stationId" jdbcType="BIGINT" />
+        <result column="station_name" property="stationName" jdbcType="BIGINT" />
+        <result column="year" property="year" jdbcType="DATE" />
+        <result column="check_msg" property="checkMsg" jdbcType="CHAR" />
+        <result column="admin_name" property="adminName" jdbcType="VARCHAR" />
+        <result column="full_name" property="fullName" jdbcType="VARCHAR" />
+        <result column="operator_id" property="operatorId" jdbcType="BIGINT" />
+        <result column="role_grade_name" property="roleGradeName" jdbcType="VARCHAR" />
+        <result column="operator_time" property="operatorTime" jdbcType="TIMESTAMP" />
+        <result column="check_opinion" property="checkOpinion" jdbcType="VARCHAR" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        log_check_id, factory_id, task_area_id, station_id, year, check_msg, admin_name,
+        full_name, operator_id, operator_time, check_opinion
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select
+        <include refid="Base_Column_List" />
+        from log_check
+        where log_check_id = #{logCheckId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+        delete from log_check
+        where log_check_id = #{logCheckId,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.cj.common.entity.LogCheck" >
+        insert into log_check (log_check_id, factory_id, task_area_id,
+        station_id, year, check_msg,
+        admin_name, full_name, operator_id,
+        role_grade_name, operator_time, check_opinion
+        )
+        values (#{logCheckId,jdbcType=BIGINT}, #{factoryId,jdbcType=BIGINT}, #{taskAreaId,jdbcType=BIGINT},
+        #{stationId,jdbcType=BIGINT}, #{year,jdbcType=DATE}, #{checkMsg,jdbcType=VARCHAR},
+        #{adminName,jdbcType=VARCHAR}, #{fullName,jdbcType=VARCHAR}, #{operatorId,jdbcType=BIGINT},
+        #{roleGradeName,jdbcType=CHAR}, #{operatorTime,jdbcType=TIMESTAMP}, #{checkOpinion,jdbcType=VARCHAR}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.cj.common.entity.LogCheck" >
+        insert into log_check
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="logCheckId != null" >
+                log_check_id,
+            </if>
+            <if test="factoryId != null" >
+                factory_id,
+            </if>
+            <if test="taskAreaId != null" >
+                task_area_id,
+            </if>
+            <if test="stationId != null" >
+                station_id,
+            </if>
+            <if test="year != null" >
+                year,
+            </if>
+            <if test="checkMsg != null" >
+                check_msg,
+            </if>
+            <if test="adminName != null" >
+                admin_name,
+            </if>
+            <if test="fullName != null" >
+                full_name,
+            </if>
+            <if test="operatorId != null" >
+                operator_id,
+            </if>
+            <if test="roleGradeName != null" >
+                role_grade_name,
+            </if>
+            <if test="operatorTime != null" >
+                operator_time,
+            </if>
+            <if test="checkOpinion != null" >
+                check_opinion,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="logCheckId != null" >
+                #{logCheckId,jdbcType=BIGINT},
+            </if>
+            <if test="factoryId != null" >
+                #{factoryId,jdbcType=BIGINT},
+            </if>
+            <if test="taskAreaId != null" >
+                #{taskAreaId,jdbcType=BIGINT},
+            </if>
+            <if test="stationId != null" >
+                #{stationId,jdbcType=BIGINT},
+            </if>
+            <if test="year != null" >
+                #{year,jdbcType=DATE},
+            </if>
+            <if test="checkMsg != null" >
+                #{checkMsg,jdbcType=VARCHAR},
+            </if>
+            <if test="adminName != null" >
+                #{adminName,jdbcType=VARCHAR},
+            </if>
+            <if test="fullName != null" >
+                #{fullName,jdbcType=VARCHAR},
+            </if>
+            <if test="operatorId != null" >
+                #{operatorId,jdbcType=BIGINT},
+            </if>
+            <if test="roleGradeName != null" >
+                #{roleGradeName,jdbcType=CHAR},
+            </if>
+            <if test="operatorTime != null" >
+                #{operatorTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="checkOpinion != null" >
+                #{checkOpinion,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.LogCheck" >
+        update log_check
+        <set >
+            <if test="factoryId != null" >
+                factory_id = #{factoryId,jdbcType=BIGINT},
+            </if>
+            <if test="taskAreaId != null" >
+                task_area_id = #{taskAreaId,jdbcType=BIGINT},
+            </if>
+            <if test="stationId != null" >
+                station_id = #{stationId,jdbcType=BIGINT},
+            </if>
+            <if test="year != null" >
+                year = #{year,jdbcType=DATE},
+            </if>
+            <if test="checkMsg != null" >
+                check_msg = #{checkMsg,jdbcType=VARCHAR},
+            </if>
+            <if test="adminName != null" >
+                admin_name = #{adminName,jdbcType=VARCHAR},
+            </if>
+            <if test="fullName != null" >
+                full_name = #{fullName,jdbcType=VARCHAR},
+            </if>
+            <if test="operatorId != null" >
+                operator_id = #{operatorId,jdbcType=BIGINT},
+            </if>
+            <if test="roleGradeName != null" >
+                role_grade_name = #{roleGradeName,jdbcType=CHAR},
+            </if>
+            <if test="operatorTime != null" >
+                operator_time = #{operatorTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="checkOpinion != null" >
+                check_opinion = #{checkOpinion,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where log_check_id = #{logCheckId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.LogCheck" >
+        update log_check
+        set factory_id = #{factoryId,jdbcType=BIGINT},
+        task_area_id = #{taskAreaId,jdbcType=BIGINT},
+        station_id = #{stationId,jdbcType=BIGINT},
+        year = #{year,jdbcType=DATE},
+        check_msg = #{checkMsg,jdbcType=VARCHAR},
+        admin_name = #{adminName,jdbcType=VARCHAR},
+        full_name = #{fullName,jdbcType=VARCHAR},
+        operator_id = #{operatorId,jdbcType=BIGINT},
+        role_grade_name = #{roleGradeName,jdbcType=CHAR},
+        operator_time = #{operatorTime,jdbcType=TIMESTAMP},
+        check_opinion = #{checkOpinion,jdbcType=VARCHAR}
+        where log_check_id = #{logCheckId,jdbcType=BIGINT}
+    </update>
+
+    <resultMap id="adminNameAndFullName" type="java.util.LinkedHashMap">
+        <result column="admin_name" property="adminName"></result>
+        <result column="full_name" property="fullName"></result>
+    </resultMap>
+
+    <!--根据adminId查询用户名及姓名-->
+    <select id="findAdminAndInfo" parameterType="java.lang.Long" resultMap="adminNameAndFullName">
+    SELECT
+    a.admin_name,ai.full_name
+    FROM
+    admin a
+    LEFT JOIN admin_info ai ON a.admin_id = ai.admin_id
+    WHERE
+    a.admin_id = #{adminId}
+  </select>
+
+
+    <!--查询操作日志-->
+    <select id="findLog" parameterType="com.cj.core.domain.Pager"
+            resultMap="com.cj.exclelog.mapper.LogCheckMapper.BaseResultMap,com.cj.common.mapper.PublicMapper.PagerTotal">
+
+        SELECT
+        SQL_CALC_FOUND_ROWS
+        fbm.factory_name,ta.task_area_name,s.station_name,
+        log_check_id, lc.factory_id, lc.task_area_id, lc.station_id, `year`, check_msg, admin_name, full_name,operator_id, operator_time, check_opinion
+        FROM
+        log_check lc
+        LEFT JOIN factory_basic_msg fbm ON fbm.factory_id = lc.factory_id
+        LEFT JOIN task_area ta ON ta.task_area_id = lc.task_area_id
+        LEFT JOIN station s ON s.station_id = lc.station_id
+        WHERE
+        1=1
+        <if test="parameters != null">
+            <if test="parameters.containsKey('factoryId')">
+                <if test="parameters.factoryId != null and parameters.factoryId != null ">
+                    AND
+                    lc.factory_id = #{parameters.factoryId}
+
+                </if>
+            </if>
+            <if test="parameters.containsKey('taskAreaId')">
+                <if test="parameters.taskAreaId != null and parameters.taskAreaId != null ">
+                    AND
+                    lc.task_area_id = #{parameters.taskAreaId}
+
+                </if>
+            </if>
+            <if test="parameters.containsKey('stationId')">
+                <if test="parameters.stationId != null and parameters.stationId != '' ">
+                    AND
+                    lc.station_id = #{parameters.stationId}
+
+                </if>
+                <if test="parameters.stationId == null or parameters.stationId == '' ">
+                    AND
+                    lc.station_id is null
+
+                </if>
+            </if>
+            <if test="!parameters.containsKey('stationId')">
+                    AND
+                    lc.station_id is null
+            </if>
+            <if test="parameters.containsKey('year')">
+                <if test="parameters.year != null and parameters.year != '' ">
+                    AND
+                    YEAR(lc.year) = #{parameters.year}
+
+                </if>
+            </if>
+            <if test="parameters.containsKey('fullName')">
+                <if test="parameters.fullName != null and parameters.fullName != '' ">
+                    AND
+                    lc.full_name LIKE CONCAT(#{parameters.fullName},'%')
+
+                </if>
+            </if>
+
+        </if>
+
+        ORDER BY lc.operator_time DESC
+        LIMIT #{minRow},#{pageSize};
+
+        SELECT FOUND_ROWS() AS total;
+    </select>
+
+
+
+
+</mapper>

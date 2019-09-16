@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclepublic.mapper.TableCellRecordMapper">
+    <resultMap id="BaseResultMap" type="com.cj.common.entity.TableCellRecord">
+        <id column="table_cell_record_id" property="tableCellRecordId" jdbcType="BIGINT"/>
+        <result column="table_record_id" property="tableRecordId" jdbcType="BIGINT"/>
+        <result column="excle_table_structure_id" property="excleTableStructureId" jdbcType="BIGINT"/>
+        <result column="cell_msg" property="cellMsg" jdbcType="VARCHAR"/>
+        <result column="founder_id" property="founderId" jdbcType="BIGINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="cell_state" property="cellState" jdbcType="CHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    table_cell_record_id, table_record_id, excle_table_structure_id, cell_msg, founder_id,
+    create_time, cell_state
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from table_cell_record
+        where table_cell_record_id = #{tableCellRecordId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from table_cell_record
+    where table_cell_record_id = #{tableCellRecordId,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.cj.common.entity.TableCellRecord">
+    insert into table_cell_record (table_cell_record_id, table_record_id, excle_table_structure_id,
+    cell_msg, founder_id, create_time,
+    cell_state)
+    values (#{tableCellRecordId,jdbcType=BIGINT}, #{tableRecordId,jdbcType=BIGINT}, #{excleTableStructureId,jdbcType=BIGINT},
+    #{cellMsg,jdbcType=VARCHAR}, #{founderId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP},
+    #{cellState,jdbcType=CHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.cj.common.entity.TableCellRecord">
+        insert into table_cell_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tableCellRecordId != null">
+                table_cell_record_id,
+            </if>
+            <if test="tableRecordId != null">
+                table_record_id,
+            </if>
+            <if test="excleTableStructureId != null">
+                excle_table_structure_id,
+            </if>
+            <if test="cellMsg != null">
+                cell_msg,
+            </if>
+            <if test="founderId != null">
+                founder_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="cellState != null">
+                cell_state,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tableCellRecordId != null">
+                #{tableCellRecordId,jdbcType=BIGINT},
+            </if>
+            <if test="tableRecordId != null">
+                #{tableRecordId,jdbcType=BIGINT},
+            </if>
+            <if test="excleTableStructureId != null">
+                #{excleTableStructureId,jdbcType=BIGINT},
+            </if>
+            <if test="cellMsg != null">
+                #{cellMsg,jdbcType=VARCHAR},
+            </if>
+            <if test="founderId != null">
+                #{founderId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cellState != null">
+                #{cellState,jdbcType=CHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.TableCellRecord">
+        update table_cell_record
+        <set>
+            <if test="tableRecordId != null">
+                table_record_id = #{tableRecordId,jdbcType=BIGINT},
+            </if>
+            <if test="excleTableStructureId != null">
+                excle_table_structure_id = #{excleTableStructureId,jdbcType=BIGINT},
+            </if>
+            <if test="cellMsg != null">
+                cell_msg = #{cellMsg,jdbcType=VARCHAR},
+            </if>
+            <if test="founderId != null">
+                founder_id = #{founderId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cellState != null">
+                cell_state = #{cellState,jdbcType=CHAR},
+            </if>
+        </set>
+        where table_cell_record_id = #{tableCellRecordId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.TableCellRecord">
+    update table_cell_record
+    set table_record_id = #{tableRecordId,jdbcType=BIGINT},
+    excle_table_structure_id = #{excleTableStructureId,jdbcType=BIGINT},
+    cell_msg = #{cellMsg,jdbcType=VARCHAR},
+    founder_id = #{founderId,jdbcType=BIGINT},
+    create_time = #{createTime,jdbcType=TIMESTAMP},
+    cell_state = #{cellState,jdbcType=CHAR}
+    where table_cell_record_id = #{tableCellRecordId,jdbcType=BIGINT}
+  </update>
+
+    <select id="selectByTabRecordId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM table_cell_record
+        WHERE table_record_id=#{tabRecordId} AND cell_state="1";
+    </select>
+
+    <select id="selectByTabRecordIdAndStruId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM table_cell_record
+        WHERE table_record_id=#{tableRecordId} AND excle_table_structure_id=#{excleTabStruId} AND cell_state="1";
+    </select>
+
+
+    <!--批量新增单元格数据-->
+    <insert id="addTableCellRecords" parameterType="java.util.List">
+        INSERT INTO
+        table_cell_record(table_record_id,excle_table_structure_id,cell_msg,founder_id,create_time)
+        VALUES
+        <foreach collection="list" item="tableCellRecords" index="index" separator=",">
+            (
+            #{tableCellRecords.tableRecordId},
+            #{tableCellRecords.excleTableStructureId},
+            #{tableCellRecords.cellMsg},
+            #{tableCellRecords.founderId},
+            #{tableCellRecords.createTime}
+            )
+        </foreach>
+    </insert>
+
+    <!--根据场站ID,表名称,年份查询表内容-->
+    <select id="findTableCellRecords" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+        tcr.*
+        FROM
+        table_cell_record tcr
+        LEFT JOIN table_record tr
+        ON tcr.table_record_id = tr.table_record_id
+        LEFT JOIN excle_table et
+        ON tr.excle_table_id = et.excle_table_id
+        WHERE
+        et.excle_table_name = #{tableName}
+        AND
+        tr.station_id = #{stationId}
+        AND
+        tr.`year`= #{year}
+    </select>
+
+    <!--根据场站ID,表名称,年份,审核状态查询表内容-->
+    <select id="findTableCellRecordsByState" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+        tcr.*
+        FROM
+        table_cell_record tcr
+        LEFT JOIN table_record tr
+        ON tcr.table_record_id = tr.table_record_id
+        LEFT JOIN excle_table et
+        ON tr.excle_table_id = et.excle_table_id
+        WHERE
+        et.excle_table_name = #{tableName}
+        AND
+        tr.station_id = #{stationId}
+        AND
+        tr.`year`= #{year}
+        AND
+        tr.check_type = #{checkType}
+    </select>
+
+    <resultMap id="TableCellRecordsByColResultMap" type="com.cj.exclepublic.domain.TableCellRecordsByCol">
+        <result column="start_row" property="startRow"></result>
+        <result column="cell_msg" property="cellMsg"></result>
+    </resultMap>
+
+    <!--根据场站ID,表名称,年份查询第5列表内容-->
+    <select id="findTableCellRecordsByCol" parameterType="java.util.Map" resultMap="TableCellRecordsByColResultMap">
+        SELECT
+        ets.`start_row`,tcr.`cell_msg`
+        FROM
+        excle_table et
+        LEFT JOIN auth_excle_factory aef ON et.excle_table_id = aef.excle_table_id
+        LEFT JOIN station s ON s.factory_type_id = aef.factory_type_id
+        LEFT JOIN excle_table_structure ets ON et.excle_table_id = ets.excle_table_id AND ets.`start_col`=4 AND
+        ets.`cell_type`=6
+        LEFT JOIN table_record tr ON et.`excle_table_id` = tr.`excle_table_id`
+        INNER JOIN table_cell_record tcr ON tcr.`excle_table_structure_id` = ets.`excle_table_structure_id`
+
+        WHERE
+        s.station_id=#{stationId}
+        AND
+        et.excle_table_name=#{tableName}
+        AND tr.`year` = #{year}
+        ORDER BY ets.start_row,ets.start_col
+    </select>
+
+    <!--根据表内容ID批量修改表内容-->
+    <update id="updateTableCellRecords" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" separator=";">
+            UPDATE
+            table_cell_record
+            SET
+            cell_msg = #{item.cellMsg},founder_id = #{item.founderId},create_time = now()
+            WHERE
+            table_cell_record_id = #{item.tableCellRecordId,jdbcType=BIGINT}
+        </foreach>
+
+    </update>
+</mapper>

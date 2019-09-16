@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclematerial.mapper.MaterialMapper">
+    <resultMap id="BaseResultMap" type="com.cj.common.entity.Material">
+        <id column="material_id" property="materialId" jdbcType="BIGINT"/>
+        <result column="material_name" property="materialName" jdbcType="VARCHAR"/>
+        <result column="material_util" property="materialUtil" jdbcType="VARCHAR"/>
+        <result column="material_type" property="materialType" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="MaterialStorehouseMaterialVos" type="com.cj.common.entity.Material" extends="BaseResultMap">
+        <collection property="storhouseMaterialVoList" ofType="com.cj.common.pojo.StorhouseMaterialVo">
+            <id column="storehouse_material_id" property="storehouseMaterialId"></id>
+            <result column="year" property="year"></result>
+            <result column="material_num" property="materialNum"></result>
+            <result column="storehouse_name" property="storehouseName"></result>
+            <result column="storehouse_id" property="storehouseId"></result>
+        </collection>
+    </resultMap>
+
+    <resultMap id="StationMasterVoResultMap" type="com.cj.common.pojo.StationMaterialVo">
+        <id column="material_id" property="materialId"></id>
+        <result property="materialName" column="material_name"/>
+        <result property="materialUtil" column="material_util"/>
+        <result property="materialNum" column="material_num"></result>
+        <association property="station" javaType="com.cj.common.entity.Station">
+            <id column="station_id" property="stationId"></id>
+            <result column="station_name" property="stationName"></result>
+        </association>
+    </resultMap>
+
+    <resultMap id="StationMasterExcelResultMap" type="com.cj.exclematerial.pojo.StationMaterialBo">
+        <id column="no" property="no"></id>
+        <result column="material_name" property="materialName"/>
+        <result column="material_util" property="materialUtil"/>
+        <result column="material_num" property="materNum"/>
+    </resultMap>
+
+    <resultMap id="StorehouseMasterExcelResultMap" type="com.cj.exclematerial.pojo.StorehouseMaterialBo">
+        <result column="material_name" property="materialName"/>
+        <result column="material_util" property="materialUtil"/>
+        <collection property="listBos" ofType="com.cj.exclematerial.pojo.ListBo">
+            <result column="material_num" property="obFieldValue"></result>
+            <result column="storehouse_name" property="obExcelField"></result>
+        </collection>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    material_id, material_name, material_util,material_type
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from material
+        where material_id = #{materialId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from material
+    where material_id = #{materialId,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.cj.common.entity.Material">
+    insert into material (material_id, material_name, material_util,material_type
+      )
+    values (#{materialId,jdbcType=BIGINT}, #{materialName,jdbcType=VARCHAR}, #{materialUtil,jdbcType=VARCHAR},#{materialType,jdbcType=VARCHAR}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.cj.common.entity.Material" useGeneratedKeys="true"
+            keyProperty="materialId">
+        insert into material
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="materialId != null">
+                material_id,
+            </if>
+            <if test="materialName != null">
+                material_name,
+            </if>
+            <if test="materialUtil != null">
+                material_util,
+            </if>
+            <if test="materialType != null">
+                material_type,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="materialId != null">
+                #{materialId,jdbcType=BIGINT},
+            </if>
+            <if test="materialName != null">
+                #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="materialUtil != null">
+                #{materialUtil,jdbcType=VARCHAR},
+            </if>
+            <if test="materialType != null">
+                #{materialType,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.Material">
+        update material
+        <set>
+            <if test="materialName != null">
+                material_name = #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="materialUtil != null">
+                material_util = #{materialUtil,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where material_id = #{materialId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.Material">
+    update material
+    set material_name = #{materialName,jdbcType=VARCHAR},
+      material_util = #{materialUtil,jdbcType=VARCHAR}
+    where material_id = #{materialId,jdbcType=BIGINT}
+  </update>
+
+
+    <!--查询储备库物资-->
+    <select id="selectStorehouseMaterial" resultMap="MaterialStorehouseMaterialVos" parameterType="java.util.Map">
+    select
+    a.material_id,a.material_name,a.material_util,
+    c.storehouse_id,c.storehouse_name,
+    b.material_num,b.storehouse_material_id
+    FROM
+    material a
+    LEFT JOIN storehouse_material b ON a.material_id=b.material_id
+    LEFT JOIN storehouse c ON b.storehouse_id=c.storehouse_id
+    WHERE
+    c.factory_id=#{factoryId}
+    AND a.material_type = '1'
+  </select>
+
+    <select id="selectStationMaterial" resultType="com.cj.exclematerial.pojo.StationMaterialDto"
+            parameterType="java.util.Map">
+        SELECT
+        a.`material_id`,
+        a.material_name materialName,
+        a.material_util materialUtil,
+        sm.material_num materialNum,
+        sm.station_id stationId,
+        sm.station_material_id stationMaterialId
+        FROM
+        material a
+        LEFT JOIN station_material sm
+        ON a.material_id = sm.material_id AND sm.station_id = #{stationId}
+        WHERE
+
+        YEAR(sm.`year`) = #{datetime}
+
+        OR a.material_id IN(34,35,36,37,38)
+        ORDER BY a.material_id ASC
+    </select>
+
+    <select id="selectExcelStationMaterial" resultMap="StationMasterExcelResultMap">
+        SELECT
+        a.material_name,
+        a.material_util,
+        sm.material_num
+        FROM
+        material a
+        LEFT JOIN station_material sm
+        ON a.material_id = sm.material_id
+        AND sm.station_id = #{stationId}
+        WHERE YEAR(sm.`year`) = #{datetime}
+        OR a.material_id IN (34, 35, 36, 37, 38)
+        ORDER BY a.material_id ASC
+    </select>
+
+    <!--导出储备库物资Excel-->
+    <select id="selectExcelStorehouseMaterial" resultMap="StorehouseMasterExcelResultMap" parameterType="java.util.Map">
+    select
+    a.material_id,a.material_name,a.material_util,
+    c.storehouse_id,c.storehouse_name,
+    b.material_num,b.storehouse_material_id
+    FROM
+    material a
+    LEFT JOIN storehouse_material b ON
+    a.material_id=b.material_id LEFT JOIN storehouse c ON b.storehouse_id=c.storehouse_id
+    WHERE  c.factory_id=#{factoryId}
+    AND a.material_type = '1'
+  </select>
+
+    <!--根据物资名字获取物资ID-->
+    <select id="findMaterialByName" resultType="java.lang.Long" parameterType="java.lang.String">
+    SELECT material_id materialId FROM material WHERE material_name = #{materialName}
+  </select>
+    <!--根据物资名字获取物资信息-->
+    <select id="findByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM material
+        WHERE material_name = #{materialName}
+    </select>
+</mapper>

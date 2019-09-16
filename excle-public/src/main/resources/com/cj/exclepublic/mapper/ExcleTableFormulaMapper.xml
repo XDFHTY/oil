@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclepublic.mapper.ExcleTableFormulaMapper" >
+    <resultMap id="BaseResultMap" type="com.cj.common.entity.ExcleTableFormula" >
+        <id column="formula_id" property="formulaId" jdbcType="BIGINT" />
+        <result column="excle_table_id" property="excleTableId" jdbcType="BIGINT" />
+        <result column="formula" property="formula" jdbcType="VARCHAR" />
+        <result column="formula_type" property="formulaType" jdbcType="CHAR" />
+        <result column="formula_sort" property="formulaSort" jdbcType="INTEGER" />
+        <result column="result_type" property="resultType" jdbcType="CHAR" />
+        <result column="sum_col" property="sumCol" jdbcType="INTEGER" />
+        <result column="sum_index" property="sumIndex" jdbcType="VARCHAR" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        formula_id, excle_table_id, formula, formula_type, formula_sort, result_type, sum_col,
+        sum_index
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select
+        <include refid="Base_Column_List" />
+        from excle_table_formula
+        where formula_id = #{formulaId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+        delete from excle_table_formula
+        where formula_id = #{formulaId,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.cj.common.entity.ExcleTableFormula" >
+        insert into excle_table_formula (formula_id, excle_table_id, formula,
+        formula_type, formula_sort, result_type,
+        sum_col, sum_index)
+        values (#{formulaId,jdbcType=BIGINT}, #{excleTableId,jdbcType=BIGINT}, #{formula,jdbcType=VARCHAR},
+        #{formulaType,jdbcType=CHAR}, #{formulaSort,jdbcType=INTEGER}, #{resultType,jdbcType=CHAR},
+        #{sumCol,jdbcType=INTEGER}, #{sumIndex,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.cj.common.entity.ExcleTableFormula" >
+        insert into excle_table_formula
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="formulaId != null" >
+                formula_id,
+            </if>
+            <if test="excleTableId != null" >
+                excle_table_id,
+            </if>
+            <if test="formula != null" >
+                formula,
+            </if>
+            <if test="formulaType != null" >
+                formula_type,
+            </if>
+            <if test="formulaSort != null" >
+                formula_sort,
+            </if>
+            <if test="resultType != null" >
+                result_type,
+            </if>
+            <if test="sumCol != null" >
+                sum_col,
+            </if>
+            <if test="sumIndex != null" >
+                sum_index,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="formulaId != null" >
+                #{formulaId,jdbcType=BIGINT},
+            </if>
+            <if test="excleTableId != null" >
+                #{excleTableId,jdbcType=BIGINT},
+            </if>
+            <if test="formula != null" >
+                #{formula,jdbcType=VARCHAR},
+            </if>
+            <if test="formulaType != null" >
+                #{formulaType,jdbcType=CHAR},
+            </if>
+            <if test="formulaSort != null" >
+                #{formulaSort,jdbcType=INTEGER},
+            </if>
+            <if test="resultType != null" >
+                #{resultType,jdbcType=CHAR},
+            </if>
+            <if test="sumCol != null" >
+                #{sumCol,jdbcType=INTEGER},
+            </if>
+            <if test="sumIndex != null" >
+                #{sumIndex,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.ExcleTableFormula" >
+        update excle_table_formula
+        <set >
+            <if test="excleTableId != null" >
+                excle_table_id = #{excleTableId,jdbcType=BIGINT},
+            </if>
+            <if test="formula != null" >
+                formula = #{formula,jdbcType=VARCHAR},
+            </if>
+            <if test="formulaType != null" >
+                formula_type = #{formulaType,jdbcType=CHAR},
+            </if>
+            <if test="formulaSort != null" >
+                formula_sort = #{formulaSort,jdbcType=INTEGER},
+            </if>
+            <if test="resultType != null" >
+                result_type = #{resultType,jdbcType=CHAR},
+            </if>
+            <if test="sumCol != null" >
+                sum_col = #{sumCol,jdbcType=INTEGER},
+            </if>
+            <if test="sumIndex != null" >
+                sum_index = #{sumIndex,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where formula_id = #{formulaId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.ExcleTableFormula" >
+        update excle_table_formula
+        set excle_table_id = #{excleTableId,jdbcType=BIGINT},
+        formula = #{formula,jdbcType=VARCHAR},
+        formula_type = #{formulaType,jdbcType=CHAR},
+        formula_sort = #{formulaSort,jdbcType=INTEGER},
+        result_type = #{resultType,jdbcType=CHAR},
+        sum_col = #{sumCol,jdbcType=INTEGER},
+        sum_index = #{sumIndex,jdbcType=VARCHAR}
+        where formula_id = #{formulaId,jdbcType=BIGINT}
+    </update>
+
+    <!--根据excleTableId查询表格公式-->
+    <select id="findExcleTableFormula" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+        *
+        FROM
+        excle_table_formula etf
+        WHERE
+        etf.excle_table_id = #{excleTableId}
+        ORDER BY etf.formula_sort ASC
+
+    </select>
+
+</mapper>

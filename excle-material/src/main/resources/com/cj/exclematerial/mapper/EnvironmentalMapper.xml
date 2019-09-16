@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cj.exclematerial.mapper.EnvironmentalMapper" >
+  <resultMap id="BaseResultMap" type="com.cj.common.entity.Environmental" >
+    <id column="environmental_id" property="environmentalId" jdbcType="BIGINT" />
+    <result column="environmental_name" property="environmentalName" jdbcType="VARCHAR" />
+    <result column="environmental_server" property="environmentalServer" jdbcType="VARCHAR" />
+    <result column="environmental_address" property="environmentalAddress" jdbcType="VARCHAR" />
+    <result column="environmental_linkman" property="environmentalLinkman" jdbcType="VARCHAR" />
+    <result column="environmental_linkman_phone" property="environmentalLinkmanPhone" jdbcType="VARCHAR" />
+    <result column="factory_id" property="factoryId" jdbcType="BIGINT" />
+    <result column="task_area_id" property="taskAreaId" jdbcType="BIGINT" />
+    <result column="station_id" property="stationId" jdbcType="BIGINT" />
+    <result column="table_year" property="tableYear" jdbcType="TIMESTAMP" />
+    <result column="table_name" property="tableName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="ExcelResultMap" type="com.cj.exclematerial.pojo.EnvironmentalBo" >
+    <id column="environmental_id" property="environmentalId" jdbcType="BIGINT" />
+    <result column="environmental_name" property="environmentalName" jdbcType="VARCHAR" />
+    <result column="environmental_server" property="environmentalServer" jdbcType="VARCHAR" />
+    <result column="environmental_address" property="environmentalAddress" jdbcType="VARCHAR" />
+    <result column="environmental_linkman" property="environmentalLinkman" jdbcType="VARCHAR" />
+    <result column="environmental_linkman_phone" property="environmentalLinkmanPhone" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    environmental_id, environmental_name, environmental_server, environmental_address, 
+    environmental_linkman, environmental_linkman_phone, factory_id, task_area_id, station_id, 
+    table_year, table_name
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from environmental
+    where environmental_id = #{environmentalId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from environmental
+    where environmental_id = #{environmentalId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cj.common.entity.Environmental" >
+    insert into environmental (environmental_id, environmental_name, 
+      environmental_server, environmental_address, 
+      environmental_linkman, environmental_linkman_phone, 
+      factory_id, task_area_id, station_id, 
+      table_year, table_name)
+    values (#{environmentalId,jdbcType=BIGINT}, #{environmentalName,jdbcType=VARCHAR}, 
+      #{environmentalServer,jdbcType=VARCHAR}, #{environmentalAddress,jdbcType=VARCHAR}, 
+      #{environmentalLinkman,jdbcType=VARCHAR}, #{environmentalLinkmanPhone,jdbcType=VARCHAR},
+      #{factoryId,jdbcType=BIGINT}, #{taskAreaId,jdbcType=BIGINT}, #{stationId,jdbcType=BIGINT}, 
+      #{tableYear,jdbcType=TIMESTAMP}, #{tableName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cj.common.entity.Environmental" >
+    insert into environmental
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="environmentalId != null" >
+        environmental_id,
+      </if>
+      <if test="environmentalName != null" >
+        environmental_name,
+      </if>
+      <if test="environmentalServer != null" >
+        environmental_server,
+      </if>
+      <if test="environmentalAddress != null" >
+        environmental_address,
+      </if>
+      <if test="environmentalLinkman != null" >
+        environmental_linkman,
+      </if>
+      <if test="environmentalLinkmanPhone != null" >
+        environmental_linkman_phone,
+      </if>
+      <if test="factoryId != null" >
+        factory_id,
+      </if>
+      <if test="taskAreaId != null" >
+        task_area_id,
+      </if>
+      <if test="stationId != null" >
+        station_id,
+      </if>
+      <if test="tableYear != null" >
+        table_year,
+      </if>
+      <if test="tableName != null" >
+        table_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="environmentalId != null" >
+        #{environmentalId,jdbcType=BIGINT},
+      </if>
+      <if test="environmentalName != null" >
+        #{environmentalName,jdbcType=VARCHAR},
+      </if>
+      <if test="environmentalServer != null" >
+        #{environmentalServer,jdbcType=VARCHAR},
+      </if>
+      <if test="environmentalAddress != null" >
+        #{environmentalAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="environmentalLinkman != null" >
+        #{environmentalLinkman,jdbcType=VARCHAR},
+      </if>
+      <if test="environmentalLinkmanPhone != null" >
+        #{environmentalLinkmanPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryId != null" >
+        #{factoryId,jdbcType=BIGINT},
+      </if>
+      <if test="taskAreaId != null" >
+        #{taskAreaId,jdbcType=BIGINT},
+      </if>
+      <if test="stationId != null" >
+        #{stationId,jdbcType=BIGINT},
+      </if>
+      <if test="tableYear != null" >
+        #{tableYear,jdbcType=TIMESTAMP},
+      </if>
+      <if test="tableName != null" >
+        #{tableName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cj.common.entity.Environmental" >
+    update environmental
+    <set >
+      <if test="environmentalName != null" >
+        environmental_name = #{environmentalName,jdbcType=VARCHAR},
+      </if>
+      <if test="environmentalServer != null" >
+        environmental_server = #{environmentalServer,jdbcType=VARCHAR},
+      </if>
+      <if test="environmentalAddress != null" >
+        environmental_address = #{environmentalAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="environmentalLinkman != null" >
+        environmental_linkman = #{environmentalLinkman,jdbcType=VARCHAR},
+      </if>
+      <if test="environmentalLinkmanPhone != null" >
+        environmental_linkman_phone = #{environmentalLinkmanPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryId != null" >
+        factory_id = #{factoryId,jdbcType=BIGINT},
+      </if>
+      <if test="taskAreaId != null" >
+        task_area_id = #{taskAreaId,jdbcType=BIGINT},
+      </if>
+      <if test="stationId != null" >
+        station_id = #{stationId,jdbcType=BIGINT},
+      </if>
+      <if test="tableYear != null" >
+        table_year = #{tableYear,jdbcType=TIMESTAMP},
+      </if>
+      <if test="tableName != null" >
+        table_name = #{tableName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where environmental_id = #{environmentalId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cj.common.entity.Environmental" >
+    update environmental
+    set environmental_name = #{environmentalName,jdbcType=VARCHAR},
+      environmental_server = #{environmentalServer,jdbcType=VARCHAR},
+      environmental_address = #{environmentalAddress,jdbcType=VARCHAR},
+      environmental_linkman = #{environmentalLinkman,jdbcType=VARCHAR},
+      environmental_linkman_phone = #{environmentalLinkmanPhone,jdbcType=VARCHAR},
+      factory_id = #{factoryId,jdbcType=BIGINT},
+      task_area_id = #{taskAreaId,jdbcType=BIGINT},
+      station_id = #{stationId,jdbcType=BIGINT},
+      table_year = #{tableYear,jdbcType=TIMESTAMP},
+      table_name = #{tableName,jdbcType=VARCHAR}
+    where environmental_id = #{environmentalId,jdbcType=BIGINT}
+  </update>
+  <!--根据Query查询环境机构-->
+  <select id="findByQuery" resultType="java.util.Map" parameterType="java.util.Map" >
+    select
+    environmental_id environmentalId,
+    environmental_name environmentalName,
+    environmental_server environmentalServer,
+    environmental_address environmentalAddress,
+    environmental_linkman environmental_linkman,
+    environmental_linkman_phone environmentalLinkmanPhone,
+    factory_basic_msg.factory_id factoryId,
+    factory_basic_msg.factory_name factoryName
+    from environmental
+    LEFT JOIN factory_basic_msg ON factory_basic_msg.factory_id=environmental.factory_id
+    WHERE 1=1
+    <if test="datetime!=null">
+      AND YEAR (table_year)=#{datetime}
+    </if>
+    <if test="factoryId!=null">
+      AND factory_basic_msg.factory_id=#{factoryId}
+    </if>
+    <if test="taskAreaId!=null">
+      AND taskarea_id=#{taskAreaId}
+    </if>
+    <if test="stationId!=null">
+      AND station_id=#{stationId}
+    </if>
+
+  </select>
+  <!--根据Query查询环境机构Excel-->
+  <select id="selectExcelEnvironmental" resultMap="ExcelResultMap" parameterType="java.util.Map" >
+    select
+    <include refid="Base_Column_List" />
+    from environmental WHERE 1=1
+    <if test="datetime!=null">
+      AND YEAR (table_year)=#{datetime}
+    </if>
+    <if test="factoryId!=null">
+      AND factory_id=#{factoryId}
+    </if>
+    <if test="taskAreaId!=null">
+      AND taskarea_id=#{taskAreaId}
+    </if>
+    <if test="stationId!=null">
+      AND station_id=#{stationId}
+    </if>
+
+  </select>
+</mapper>
